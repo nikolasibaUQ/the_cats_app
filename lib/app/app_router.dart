@@ -1,8 +1,8 @@
 import 'package:go_router/go_router.dart';
 
-import '../features/breeds/presentation/breed_detail_screen.dart';
-import '../features/breeds/presentation/breeds_screen.dart';
-import '../features/breeds/presentation/splash_screen.dart';
+import '../features/breeds/presentation/screens/breed_detail_screen.dart';
+import '../features/breeds/presentation/screens/breeds_screen.dart';
+import '../features/breeds/presentation/screens/splash_screen.dart';
 
 final appRouter = GoRouter(
   routes: [

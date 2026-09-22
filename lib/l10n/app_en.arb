@@ -5,14 +5,29 @@
   "refreshBreeds": "Refresh breeds",
   "meetBreeds": "Meet the breeds",
   "intro": "Find a feline friend and discover what makes them unique.",
-  "searchHint": "Search by breed name",
+  "searchHint": "Name or origin",
+  "searchMinimum": "Type at least 2 letters to search.",
+  "breedsLabel": "BREEDS",
+  "showingBreeds": "Showing {shown} of {total}",
+  "@showingBreeds": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "showMoreBreeds": "Show more breeds",
+  "exploreBreeds": "Explore breeds",
   "loadErrorTitle": "Could not load breeds",
   "loadErrorDetail": "Check your connection and try again.",
   "retry": "Try again",
   "noBreedsTitle": "No breeds available",
   "noBreedsDetail": "Please try again later.",
   "noMatchesTitle": "No matches",
-  "noMatchesDetail": "Try another breed name.",
+  "noMatchesDetail": "Try another breed or origin.",
   "backToBreeds": "Back to breeds",
   "detailErrorTitle": "Could not load this breed",
   "breedNotFound": "Breed not found",
@@ -25,6 +40,7 @@
     }
   },
   "atGlance": "At a glance",
+  "descriptionTitle": "Description",
   "temperament": "Temperament",
   "lifeSpan": "Life span",
   "lifeSpanValue": "{years} years",

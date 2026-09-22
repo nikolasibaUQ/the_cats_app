@@ -5,8 +5,9 @@ Browse cat breeds, search by name, and open a detail page that also works as a
 direct Web link.
 
 > **Beta status:** The three-screen journey and API integration are implemented.
-> The release build succeeds locally. Visual behavior in a real browser and
-> deployment on a host still need review.
+> The release build succeeds locally. Web image handling was verified in a real
+> browser for the list, detail, and missing-image cases. Deployment on a host
+> still needs review.
 
 ## At a glance
 
@@ -17,7 +18,7 @@ direct Web link.
 | Detail | Image, description, available traits, and `/breeds/:id` route |
 | Languages | Spanish and English UI, with device-language default and in-app selector |
 | Web hosting | Dockerfile and Nginx route fallback present |
-| Tests | DTO parsing, mapping validation, and search-to-detail interaction |
+| Tests | DTO parsing, mapping validation, image strategy, and search-to-detail interaction |
 
 ## Use the app
 
@@ -27,17 +28,21 @@ direct Web link.
    action to return to the list. A detail URL can load independently.
 
 The UI uses a warm, restrained style and adapts from mobile to wider Web
-layouts. Image loading and failures have visual fallbacks. API errors offer
-retry instead of exposing exception text. Trait values describe **how much of
+layouts. Image loading and failures have visual fallbacks. Because the image
+host sends no CORS headers, Web builds render photos through an HTML `<img>`
+platform view instead of the canvas; `docs/design.md` explains the constraint
+and the chosen strategy. API errors offer retry instead of exposing exception
+text. Trait values describe **how much of
 a trait** a breed has, not whether that trait is universally good; for example,
 high grooming means more care is needed.
 
 The shared [`Responsive` helper](lib/shared/responsive.dart) supplies bounded
 spacing, radii, icon sizes, and viewport measurements. The list chooses grid
-columns from its available width and scrolls as one page. Detail stacks its
-content on mobile and uses two columns on wide screens, with the information
-column scrolling independently. Flutter's text theme still handles text
-scaling and accessibility.
+columns from its available width and scrolls as one page; its header keeps the
+section label and the result counter on one line while both fit and wraps them
+otherwise. Detail stacks its content on mobile and uses two columns on wide
+screens, with the information column scrolling independently. Flutter's text
+theme still handles text scaling and accessibility.
 
 The interface follows the device language when it is Spanish or English.
 The language button in the app bar also lets users choose **Español**,
@@ -145,6 +150,11 @@ search results; local launch settings remain private.
 ## Current limits
 
 - A fresh detail URL fetches the full breed list before selecting its ID.
+- 41 of the 107 live breed entries have no image, so the placeholder is common.
+- Web photos use an HTML `<img>` platform view because `cdn2.thecatapi.com`
+  sends no CORS headers. Such images are not captured by Flutter screenshot or
+  `RepaintBoundary` APIs, and colour, opacity, and filter options do not apply
+  to them. Mobile and desktop are unaffected.
 - Some API entries lack an image or numeric trait ratings. The UI uses a
   fallback image and omits missing ratings. The sampled live response had no
   numeric trait fields.

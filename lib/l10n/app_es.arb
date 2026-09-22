@@ -5,14 +5,29 @@
   "refreshBreeds": "Actualizar razas",
   "meetBreeds": "Conoce las razas",
   "intro": "Encuentra un amigo felino y descubre qué lo hace único.",
-  "searchHint": "Buscar por nombre de raza",
+  "searchHint": "Raza u origen",
+  "searchMinimum": "Escribe al menos 2 letras para buscar.",
+  "breedsLabel": "RAZAS",
+  "showingBreeds": "Mostrando {shown} de {total}",
+  "@showingBreeds": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "showMoreBreeds": "Ver más razas",
+  "exploreBreeds": "Explorar razas",
   "loadErrorTitle": "No se pudieron cargar las razas",
   "loadErrorDetail": "Revisa tu conexión e inténtalo de nuevo.",
   "retry": "Reintentar",
   "noBreedsTitle": "No hay razas disponibles",
   "noBreedsDetail": "Vuelve a intentarlo más tarde.",
   "noMatchesTitle": "Sin resultados",
-  "noMatchesDetail": "Prueba con otro nombre de raza.",
+  "noMatchesDetail": "Prueba con otra raza u origen.",
   "backToBreeds": "Volver a las razas",
   "detailErrorTitle": "No se pudo cargar esta raza",
   "breedNotFound": "Raza no encontrada",
@@ -25,6 +40,7 @@
     }
   },
   "atGlance": "De un vistazo",
+  "descriptionTitle": "Descripción",
   "temperament": "Temperamento",
   "lifeSpan": "Esperanza de vida",
   "lifeSpanValue": "{years} años",
