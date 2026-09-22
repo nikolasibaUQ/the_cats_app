@@ -1,10 +1,10 @@
-FROM ghcr.io/cirruslabs/flutter:stable AS build
+FROM ghcr.io/cirruslabs/flutter:3.35.6 AS build
 
 WORKDIR /app
 
 COPY pubspec.yaml pubspec.lock ./
 
-RUN flutter pub get
+RUN flutter pub get --enforce-lockfile
 
 COPY . .
 

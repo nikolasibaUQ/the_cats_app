@@ -81,11 +81,11 @@ and extra API calls are outside its scope.
 
 ## Run locally
 
-Install [Flutter](https://docs.flutter.dev/get-started/install) with a Dart SDK
-compatible with `pubspec.yaml`, then run:
+Install [Flutter 3.35.6](https://docs.flutter.dev/get-started/install), the
+version used by the Docker build (Dart 3.9.2), then run:
 
 ```bash
-flutter pub get
+flutter pub get --enforce-lockfile
 dart run build_runner build --delete-conflicting-outputs
 flutter gen-l10n
 cp .env.example .env
@@ -128,8 +128,8 @@ inference is kept where Dart can determine a concrete type.
 
 ## Web hosting
 
-The [Dockerfile](Dockerfile) builds Flutter Web and serves it with
-[Nginx](nginx.conf). Nginx falls back to `index.html` for application routes,
+The [Dockerfile](Dockerfile) pins Flutter 3.35.6, builds Flutter Web, and serves
+it with [Nginx](nginx.conf). Nginx falls back to `index.html` for application routes,
 which supports direct links and refreshes once deployed. The Docker image and
 hosted route behavior have not yet been verified end to end. Dokploy is a
 possible host, not an implemented dependency.
