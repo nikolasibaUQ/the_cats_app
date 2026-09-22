@@ -18,10 +18,9 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# Share workspace display settings without committing personal launch settings.
+.vscode/*
+!.vscode/settings.json
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -33,6 +32,16 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Local build configuration. Keep the public template versioned.
+.env
+.env.*
+!.env.example
+
+# Recreate generated Dart code from annotations and ARB files.
+**/*.g.dart
+**/*.freezed.dart
+/lib/l10n/generated/
+
 # Symbolication related
 app.*.symbols
 
@@ -43,3 +52,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local working notes for this technical challenge.
+/docs/
+/AGENTS.md

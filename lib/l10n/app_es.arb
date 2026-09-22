@@ -1,0 +1,75 @@
+{
+  "@@locale": "es",
+  "appTitle": "The Cats",
+  "openingApp": "Abriendo The Cats",
+  "refreshBreeds": "Actualizar razas",
+  "meetBreeds": "Conoce las razas",
+  "intro": "Encuentra un amigo felino y descubre qué lo hace único.",
+  "searchHint": "Buscar por nombre de raza",
+  "loadErrorTitle": "No se pudieron cargar las razas",
+  "loadErrorDetail": "Revisa tu conexión e inténtalo de nuevo.",
+  "retry": "Reintentar",
+  "noBreedsTitle": "No hay razas disponibles",
+  "noBreedsDetail": "Vuelve a intentarlo más tarde.",
+  "noMatchesTitle": "Sin resultados",
+  "noMatchesDetail": "Prueba con otro nombre de raza.",
+  "backToBreeds": "Volver a las razas",
+  "detailErrorTitle": "No se pudo cargar esta raza",
+  "breedNotFound": "Raza no encontrada",
+  "fromOrigin": "Origen: {origin}",
+  "@fromOrigin": {
+    "placeholders": {
+      "origin": {
+        "type": "String"
+      }
+    }
+  },
+  "atGlance": "De un vistazo",
+  "temperament": "Temperamento",
+  "lifeSpan": "Esperanza de vida",
+  "lifeSpanValue": "{years} años",
+  "@lifeSpanValue": {
+    "placeholders": {
+      "years": {
+        "type": "String"
+      }
+    }
+  },
+  "weight": "Peso",
+  "factValue": "{label}: {value}",
+  "@factValue": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "weightValue": "{kilograms} kg",
+  "@weightValue": {
+    "placeholders": {
+      "kilograms": {
+        "type": "String"
+      }
+    }
+  },
+  "characteristics": "Características",
+  "affection": "Afecto",
+  "energy": "Energía",
+  "groomingNeeds": "Necesidades de aseo",
+  "intelligence": "Inteligencia",
+  "ratingValue": "{value} / 5",
+  "@ratingValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "language": "Idioma",
+  "systemLanguage": "Idioma del sistema",
+  "english": "English",
+  "spanish": "Español"
+}
