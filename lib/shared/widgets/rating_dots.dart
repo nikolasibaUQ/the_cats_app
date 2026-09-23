@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/generated/app_localizations.dart';
-import '../responsive.dart';
+import '../utils/responsive.dart';
 
 /// Renders a 1-to-5 API rating as filled and empty dots.
 ///

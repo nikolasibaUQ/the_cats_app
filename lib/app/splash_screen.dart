@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../l10n/generated/app_localizations.dart';
-import '../shared/responsive.dart';
+import '../shared/utils/responsive.dart';
 import 'app_routes.dart';
 
 /// Brief entry screen that hands over to the breed list.

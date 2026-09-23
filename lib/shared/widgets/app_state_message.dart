@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../responsive.dart';
+import '../utils/responsive.dart';
 
 class AppStateMessage extends StatelessWidget {
   const AppStateMessage({

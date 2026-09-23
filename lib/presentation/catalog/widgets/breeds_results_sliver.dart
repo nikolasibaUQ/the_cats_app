@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/entities/breed.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/responsive.dart';
+import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/app_state_message.dart';
 import '../breeds_catalog_view.dart';
 import 'breed_card.dart';

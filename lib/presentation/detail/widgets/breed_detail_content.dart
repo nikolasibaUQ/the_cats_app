@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/breed.dart';
 import '../../../domain/entities/breed_photo.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/responsive.dart';
+import '../../../shared/utils/responsive.dart';
 import '../../breed_formatting.dart';
 import 'breed_detail_hero.dart';
 import 'breed_information.dart';

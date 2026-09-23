@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/breed.dart';
 import '../../../domain/entities/breed_flag.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/responsive.dart';
+import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/rating_dots.dart';
 import '../../../shared/widgets/section_title.dart';
 import '../../breed_formatting.dart';

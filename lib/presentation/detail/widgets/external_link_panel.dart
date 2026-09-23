@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/responsive.dart';
+import '../../../shared/utils/responsive.dart';
 
 /// Panel that opens an article about the breed outside the application.
 ///

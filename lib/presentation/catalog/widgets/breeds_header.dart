@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/responsive.dart';
+import '../../../shared/utils/responsive.dart';
 
 class BreedsHeader extends StatelessWidget {
   const BreedsHeader({

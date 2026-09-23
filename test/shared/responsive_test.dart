@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:the_cats_app/shared/responsive.dart';
+import 'package:the_cats_app/shared/utils/responsive.dart';
 
 void main() {
   test('keeps viewport measurements and visual scales bounded', () {

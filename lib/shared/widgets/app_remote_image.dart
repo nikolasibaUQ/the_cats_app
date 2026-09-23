@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../responsive.dart';
+import '../utils/responsive.dart';
 
 /// Remote breed photo that never leaves an empty box behind.
 ///

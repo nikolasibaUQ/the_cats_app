@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/entities/breed_photo.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/responsive.dart';
+import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/app_remote_image.dart';
 import '../../../shared/widgets/overlay_circle_surface.dart';
 import 'breed_fullscreen_gallery.dart';

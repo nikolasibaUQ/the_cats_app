@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../responsive.dart';
+import '../utils/responsive.dart';
 
 /// Translucent circular surface for controls that float above a photo.
 ///

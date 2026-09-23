@@ -5,7 +5,7 @@ import '../../../app/language_menu.dart';
 import '../../../domain/entities/breed.dart';
 import '../../../domain/entities/breed_photo.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/responsive.dart';
+import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/overlay_circle_surface.dart';
 import 'breed_gallery.dart';
 
