@@ -11,6 +11,7 @@ import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/detail/widgets/breed_gallery.dart';
 import 'package:the_cats_app/presentation/photo_framing.dart';
 import 'package:the_cats_app/shared/widgets/app_remote_image.dart';
+import 'package:the_cats_app/shared/widgets/localized_state_illustration.dart';
 
 class _FakeBreedsRepository implements BreedsRepository {
   int requests = 0;
@@ -151,6 +152,7 @@ Future<void> pumpApp(
 }) async {
   final container = ProviderContainer(
     overrides: [breedsRepositoryProvider.overrideWithValue(repository)],
+    retry: (retryCount, error) => null,
   );
   addTearDown(container.dispose);
   container.read(appRouterProvider).go(location);
@@ -560,6 +562,9 @@ void main() {
 
     expect(find.text('Bengal'), findsOneWidget);
     expect(find.text('Retry photos'), findsOneWidget);
-    expect(find.byIcon(Icons.pets_rounded), findsOneWidget);
+    final illustration = tester.widget<LocalizedStateIllustration>(
+      find.byType(LocalizedStateIllustration),
+    );
+    expect(illustration.kind, StateIllustrationKind.notFound);
   });
 }

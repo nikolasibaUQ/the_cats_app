@@ -92,16 +92,19 @@ class _BreedGalleryState extends State<BreedGallery> {
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
     final responsive = Responsive.of(context);
+    final isLoadingPhotos =
+        widget.photoRequest.isLoading && !widget.photoRequest.hasError;
     return Stack(
       fit: StackFit.expand,
       children: [
         if (widget.photos.isEmpty)
-          // A breed the API has no photo for: the monogram identifies it and
-          // the caption explains the gap, so the area does not look unfinished.
+          // A breed the API has no photo for uses the localized unavailable
+          // artwork, so the area does not look unfinished.
           AppRemoteImage(
             url: null,
             label: widget.label,
             caption: strings.noPhoto,
+            loading: isLoadingPhotos,
           )
         else
           PageView.builder(
@@ -185,7 +188,7 @@ class _BreedGalleryState extends State<BreedGallery> {
               ),
             ),
           ),
-        if (widget.photoRequest.isLoading)
+        if (widget.photos.isNotEmpty && isLoadingPhotos)
           const Align(
             alignment: Alignment.bottomCenter,
             child: Padding(

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:the_cats_app/l10n/generated/app_localizations.dart';
 import 'package:the_cats_app/shared/widgets/app_remote_image.dart';
 
 Widget _frame(Widget child) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
   home: Scaffold(body: SizedBox(width: 200, height: 200, child: child)),
 );
 
@@ -18,7 +21,9 @@ void main() {
       ),
     );
 
-    final image = tester.widget<Image>(find.byType(Image));
+    final image = tester
+        .widgetList<Image>(find.byType(Image))
+        .firstWhere((image) => image.image is NetworkImage);
     final provider = image.image as NetworkImage;
     // The Cat API image host sends no CORS headers, and Flutter Web reads image
     // bytes with XHR, so the browser blocks the request and logs one error per
@@ -27,7 +32,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps the placeholder behind the photo, never an empty box', (
+  testWidgets('keeps localized loading artwork behind the photo', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -42,14 +47,17 @@ void main() {
           )
           .first,
     );
-    // The first layer is the placeholder, so a slow or failed download still
-    // shows the breed instead of a blank area.
+    // The first layer remains visible until the remote image is ready.
     expect(stack.children.first, isNot(isA<Image>()));
-    expect(find.byIcon(Icons.pets_rounded), findsOneWidget);
-    expect(find.byType(Image), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('assets/images/loading_4_3.png')),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('names the placeholder with the breed initial', (tester) async {
+  testWidgets('uses the breed name as the remote photo semantic label', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _frame(
         const AppRemoteImage(
@@ -59,14 +67,37 @@ void main() {
       ),
     );
 
-    expect(find.text('B'), findsOneWidget);
-    expect(find.byIcon(Icons.pets_rounded), findsOneWidget);
+    final networkImage = tester
+        .widgetList<Image>(find.byType(Image))
+        .firstWhere((image) => image.image is NetworkImage);
+    expect(networkImage.semanticLabel, 'Bengal');
   });
 
-  testWidgets('shows the placeholder when the URL is missing', (tester) async {
+  testWidgets('shows unavailable artwork when the URL is missing', (
+    tester,
+  ) async {
     await tester.pumpWidget(_frame(const AppRemoteImage(url: '')));
 
-    expect(find.byType(Image), findsNothing);
-    expect(find.byIcon(Icons.pets_rounded), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('assets/images/no_find_4_3.png')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('shows loading artwork while waiting for a missing URL', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _frame(const AppRemoteImage(url: null, loading: true)),
+    );
+
+    expect(
+      find.byKey(const ValueKey<String>('assets/images/loading_4_3.png')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey<String>('assets/images/no_find_4_3.png')),
+      findsNothing,
+    );
   });
 }

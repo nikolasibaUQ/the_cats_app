@@ -84,10 +84,11 @@ void main() {
       ),
     );
 
-    // The monogram identifies the breed and the caption explains the gap, so a
-    // breed without photos never looks like a screen that failed to load.
-    expect(find.text('A'), findsOneWidget);
-    expect(find.text('No photo available for this breed'), findsOneWidget);
+    // The localized unavailable artwork makes the missing-photo state explicit.
+    expect(
+      find.byKey(const ValueKey<String>('assets/images/no_find_4_3.png')),
+      findsOneWidget,
+    );
     expect(find.byType(PageView), findsNothing);
     expect(tester.takeException(), isNull);
   });

@@ -48,10 +48,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # Bundled breed attributes the live API no longer returns on the free plan.
-  # See docs/api.md for the source, the capture date, and the merge rule.
   assets:
-    - assets/breed_reference.json
+    - assets/images/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -7,6 +7,7 @@ import '../../app/language_menu.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/utils/responsive.dart';
 import '../../shared/widgets/app_state_message.dart';
+import '../../shared/widgets/localized_state_illustration.dart';
 import '../breeds_providers.dart';
 import 'breeds_catalog_controller.dart';
 import 'breeds_catalog_view.dart';
@@ -64,15 +65,25 @@ class BreedsScreen extends ConsumerWidget {
                     key: const Key('breeds-results-scroll'),
                     slivers: [
                       catalog.when<Widget>(
-                        loading: () => const SliverFillRemaining(
+                        loading: () => SliverFillRemaining(
                           hasScrollBody: false,
-                          child: Center(child: CircularProgressIndicator()),
+                          child: AppStateMessage(
+                            title: strings.loadingCats,
+                            visual: LocalizedStateIllustration(
+                              kind: StateIllustrationKind.loading,
+                              semanticLabel: strings.loadingCats,
+                            ),
+                          ),
                         ),
                         error: (error, stackTrace) => SliverFillRemaining(
                           hasScrollBody: false,
                           child: AppStateMessage(
-                            icon: Icons.wifi_off_rounded,
                             title: strings.loadErrorTitle,
+                            visual: LocalizedStateIllustration(
+                              kind: StateIllustrationKind.notFound,
+                              semanticLabel: strings.loadErrorTitle,
+                              maxWidth: 240,
+                            ),
                             detail: strings.loadErrorDetail,
                             action: FilledButton(
                               onPressed: () => ref.invalidate(breedsProvider),

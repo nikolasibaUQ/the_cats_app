@@ -7,6 +7,7 @@ import '../../app/language_menu.dart';
 import '../../domain/entities/breed.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/app_state_message.dart';
+import '../../shared/widgets/localized_state_illustration.dart';
 import 'breed_detail_providers.dart';
 import 'widgets/breed_detail_content.dart';
 
@@ -53,10 +54,20 @@ class BreedDetailScreen extends ConsumerWidget {
             )
           : null,
       body: breed.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => AppStateMessage(
+          title: strings.loadingCats,
+          visual: LocalizedStateIllustration(
+            kind: StateIllustrationKind.loading,
+            semanticLabel: strings.loadingCats,
+          ),
+        ),
         error: (error, stackTrace) => AppStateMessage(
-          icon: Icons.wifi_off_rounded,
           title: strings.detailErrorTitle,
+          visual: LocalizedStateIllustration(
+            kind: StateIllustrationKind.notFound,
+            semanticLabel: strings.detailErrorTitle,
+            maxWidth: 240,
+          ),
           action: FilledButton(
             onPressed: () => ref.invalidate(breedByIdProvider(breedId)),
             child: Text(strings.retry),
@@ -64,8 +75,11 @@ class BreedDetailScreen extends ConsumerWidget {
         ),
         data: (selected) => selected == null
             ? AppStateMessage(
-                icon: Icons.pets_outlined,
                 title: strings.breedNotFound,
+                visual: LocalizedStateIllustration(
+                  kind: StateIllustrationKind.notFound,
+                  semanticLabel: strings.breedNotFound,
+                ),
               )
             : _BreedDetailBody(breed: selected),
       ),

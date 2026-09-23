@@ -5,13 +5,15 @@ import '../utils/responsive.dart';
 class AppStateMessage extends StatelessWidget {
   const AppStateMessage({
     super.key,
-    required this.icon,
     required this.title,
+    this.icon,
+    this.visual,
     this.detail,
     this.action,
-  });
+  }) : assert(icon != null || visual != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final Widget? visual;
   final String title;
   final String? detail;
   final Widget? action;
@@ -25,11 +27,14 @@ class AppStateMessage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: responsive.icon(48),
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            if (visual case final visual?)
+              Flexible(child: visual)
+            else
+              Icon(
+                icon,
+                size: responsive.icon(48),
+                color: Theme.of(context).colorScheme.primary,
+              ),
             SizedBox(height: responsive.spacing(12)),
             Text(
               title,

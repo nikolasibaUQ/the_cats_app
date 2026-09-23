@@ -21,6 +21,7 @@
   },
   "showMoreBreeds": "Ver más razas",
   "exploreBreeds": "Explorar razas",
+  "loadingCats": "Cargando gatos",
   "loadErrorTitle": "No se pudieron cargar las razas",
   "loadErrorDetail": "Revisa tu conexión e inténtalo de nuevo.",
   "retry": "Reintentar",

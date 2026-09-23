@@ -21,6 +21,7 @@
   },
   "showMoreBreeds": "Show more breeds",
   "exploreBreeds": "Explore breeds",
+  "loadingCats": "Loading cats",
   "loadErrorTitle": "Could not load breeds",
   "loadErrorDetail": "Check your connection and try again.",
   "retry": "Try again",

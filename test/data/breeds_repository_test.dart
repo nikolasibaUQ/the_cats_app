@@ -1,12 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/data/repositories/breeds_repository_impl.dart';
-import 'package:the_cats_app/data/sources/breed_reference_source.dart';
 import 'package:the_cats_app/data/sources/breeds_remote_data_source.dart';
-
-/// Reference source backed by a document in the test, so no asset is needed.
-BreedReferenceSource referenceSource(String document) =>
-    BreedReferenceSource(loadAsset: (key) async => document);
 
 Dio dioReturning(List<Map<String, Object?>> data) {
   final dio = Dio();
@@ -33,7 +28,6 @@ void main() {
 
     final breeds = await BreedsRepositoryImpl(
       remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
-      referenceSource: referenceSource('{"breeds": {}}'),
     ).getBreeds();
 
     expect(breeds, hasLength(1));
@@ -66,7 +60,6 @@ void main() {
 
     final breeds = await BreedsRepositoryImpl(
       remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
-      referenceSource: referenceSource('{"breeds": {}}'),
     ).getBreeds();
 
     // The detail photo area frames the photo with this proportion.
@@ -77,7 +70,7 @@ void main() {
     expect(breeds.last.imageHeight, isNull);
   });
 
-  test('fills the attributes the live response no longer carries', () async {
+  test('keeps optional attributes absent when the API omits them', () async {
     final dio = dioReturning([
       {
         'id': 'beng',
@@ -90,49 +83,20 @@ void main() {
         },
       },
     ]);
-    final references = referenceSource(
-      '{"breeds": {"beng": {"adaptability": 5, "intelligence": 5,'
-      ' "traits": ["hypoallergenic"],'
-      ' "wikipedia_url": "https://en.wikipedia.org/wiki/Bengal_(cat)"}}}',
-    );
-
     final breeds = await BreedsRepositoryImpl(
       remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
-      referenceSource: references,
     ).getBreeds();
 
-    expect(breeds.single.adaptability, 5);
-    expect(breeds.single.intelligence, 5);
-    expect(
-      breeds.single.wikipediaUrl,
-      'https://en.wikipedia.org/wiki/Bengal_(cat)',
-    );
+    expect(breeds.single.adaptability, isNull);
+    expect(breeds.single.intelligence, isNull);
+    expect(breeds.single.wikipediaUrl, isNull);
     expect(breeds.single.origin, 'United States');
-    // The reference fills gaps only, so the photo size the API states survives
-    // and the detail area can still frame the photo with it.
     expect(
       breeds.single.imageUrl,
       'https://cdn2.thecatapi.com/images/beng.jpg',
     );
     expect(breeds.single.imageWidth, 1600);
     expect(breeds.single.imageHeight, 1000);
-  });
-
-  test('keeps the API data when the bundled dataset cannot be read', () async {
-    final dio = dioReturning([
-      {'id': 'beng', 'name': 'Bengal', 'life_span': '12-16'},
-    ]);
-
-    final breeds = await BreedsRepositoryImpl(
-      remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
-      referenceSource: BreedReferenceSource(
-        loadAsset: (key) async => throw StateError('missing asset'),
-      ),
-    ).getBreeds();
-
-    expect(breeds.single.name, 'Bengal');
-    expect(breeds.single.lifeSpan, '12-16');
-    expect(breeds.single.intelligence, isNull);
   });
 
   test('requests and maps photos for one breed', () async {
@@ -161,7 +125,6 @@ void main() {
 
     final photos = await BreedsRepositoryImpl(
       remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
-      referenceSource: referenceSource('{"breeds": {}}'),
     ).getBreedPhotos('beng', limit: 6);
 
     expect(capturedRequest?.path, '/images/search');

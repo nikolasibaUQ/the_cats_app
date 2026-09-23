@@ -18,7 +18,7 @@ works as a direct Web link.
 | Detail | Photo area shaped by the photo it shows, with overlaid controls, the facts the app has (origin, group, life span, weight, height), history, ratings and traits, suggestions, and Wikipedia |
 | Languages | Spanish and English UI, with device-language default, in-app selector, and metric/imperial weight |
 | Web hosting | Dockerfile and Nginx route fallback present |
-| Tests | DTO parsing, mapping, reference-dataset merge and precedence, domain search and gallery rules, weight formatting, provider state, image strategy, and interaction flows |
+| Tests | DTO parsing and mapping, domain search and gallery rules, weight formatting, provider state, responsive state artwork, image strategy, and interaction flows |
 
 ## Use the app
 
@@ -33,31 +33,25 @@ works as a direct Web link.
    own, and going back keeps the catalog exactly as it was left.
 
 The current API response carries the factual fields (description, history,
-group, ranges, temperament) but no longer returns the numeric trait ratings, the
-binary traits, or a Wikipedia link on the free plan. The app therefore completes
-those attributes from a captured dataset that ships with it:
-[`assets/breed_reference.json`](assets/breed_reference.json) holds the values for
-the 67 breeds that ever carried them, taken from the same `GET /v1/breeds`
-response (source and capture date are stored inside the file, and
-[`docs/api.md`](docs/api.md) documents the rule). The API always wins attribute
-by attribute, so the ratings, traits, and exact article link that appear are the
-values The Cat API itself published, and a breed outside the dataset simply
-omits those sections instead of inventing numbers. The article action uses
-`wikipedia_url` when it exists and otherwise a Wikipedia search for the breed
-name, which leads to the article.
+group, ranges, and temperament) but no longer returns the numeric trait ratings,
+binary traits, alternative names, or a Wikipedia link on the free plan. The app
+uses only the API payload: it omits missing optional sections rather than
+shipping a captured data copy. The article action uses `wikipedia_url` when the
+API provides it and otherwise opens a Wikipedia search for the breed name.
 
 The UI uses a warm, restrained style and adapts from mobile to wider Web
-layouts. Photos always sit on top of a placeholder that names the breed's
-initial, so a slow download, a failed request, or a missing URL never leaves a
-blank frame; a breed with no photos says so instead of looking unfinished.
+layouts. Photos show loading artwork while they download and unavailable
+artwork when the URL is missing or fails, so no frame stays blank. Each state
+selects a 3:4 or 4:3 asset from its frame and Flutter renders the localized copy.
 In detail, the photo area adopts the shape of the photo it shows — bounded
 between 3:4 and 3:2 — instead of zooming every photo into the same rectangle.
 Because the image host sends no CORS headers, Web builds render photos through
 an HTML `<img>` element, which is also why the browser console stays clean
 instead of reporting one blocked request per photo. API errors offer retry
-instead of exposing exception text. Trait values describe **how much of
-a trait** a breed has, not whether that trait is universally good; for example,
-high grooming means more care is needed.
+instead of exposing exception text. Full-screen loading, empty, and failure
+states use responsive cat artwork from `assets/images/`. Trait values describe
+**how much of a trait** a breed has, not whether that trait is universally good;
+for example, high grooming means more care is needed.
 
 The shared [`Responsive` helper](lib/shared/responsive.dart) supplies bounded
 spacing, radii, icon sizes, and viewport measurements. The list keeps its title
@@ -87,14 +81,13 @@ dependencies flow through these responsibilities:
 Presentation → Domain repository contract ← Data repository
        │                                      │
        └── Riverpod                    remote data source → Dio → The Cat API
-                                       reference data source → bundled dataset
 ```
 
 - **Structure**: `lib/app/` is the shell; `lib/domain/` (`entities/`,
   `policies/`, `repositories/`), `lib/data/` (`dtos/`, `mappers/`, `sources/`,
   `repositories/`), and `lib/presentation/` are the layers; `lib/di/` holds the
   composition root; `lib/shared/` holds what more than one flow uses; and
-  `assets/` holds the bundled reference dataset. Models are split by role, so an
+  `assets/images/` holds responsive state artwork. Models are split by role, so an
   import path already states whether it reads an application entity, a payload
   shape, or a mapping helper. `test/` mirrors those layers. Introducing a second
   domain would justify nesting the layers under a feature folder.
@@ -112,10 +105,8 @@ Presentation → Domain repository contract ← Data repository
   live here because they are rules rather than drawing code.
 - **Data** keeps Dio and response parsing in a remote data source. It also owns
   the interpretation of raw API values: ratings outside 1–5 become unknown,
-  binary traits become typed values, and unusable links are dropped. A second
-  source reads `assets/breed_reference.json`, the captured dataset of attributes
-  the free plan no longer serves, and the repository merges it with the API
-  response under one rule: an API value always wins.
+  binary traits become typed values, and unusable links are dropped. The
+  repository maps only values returned by The Cat API.
 - **Composition root** (`lib/di/`) is the only place that constructs the
   concrete Data implementation behind the Domain contract.
 - **Display rules** that depend on the active language, such as the weight
@@ -149,8 +140,8 @@ are parsed once and do not need generated `copyWith` or value equality.
 | Read the weight in the language's system | Each reader sees the measurement they use | One display rule with a fallback |
 | Open the Wikipedia article outside the app | The full article without embedding a browser | One more dependency (`url_launcher`) |
 | Suggest six related breeds with a counter | Keeps browsing local to the page | One derived provider |
-| Show every rating and trait the API or the reference dataset has | The detail answers most questions without another source | A longer column to scan |
-| Bundle the attributes the free plan stopped serving | Real vendor values for the ratings, traits, and article link | A captured dataset to refresh if The Cat API changes it |
+| Show every valid rating and trait the API supplies | The detail remains faithful to the live payload | Optional sections may be absent |
+| Keep state copy outside responsive artwork | One 3:4 and one 4:3 image serve every language and layout | Four bitmap assets increase the bundle size |
 | Render each fact once, in the overview cards | The column scans faster and no value appears twice | The header carries only the name and its alternatives |
 | Prefer the HTML element for Web photos | No blocked request and no repeated CORS error per photo, plus browser caching | Platform-view images are not captured by screenshot APIs |
 | Keep a placeholder under every photo | Loading and failures never leave a blank frame | One extra widget per image |
@@ -202,18 +193,16 @@ flutter test
 flutter build web --release --dart-define-from-file=.env
 ```
 
-Code generation, analysis, 54 widget and unit tests, and the Web release build
+Code generation, analysis, widget and unit tests, and the Web release build
 passed locally for this beta. Tests cover DTO parsing and the interpretation of
-raw API values (ratings, binary traits, weight ranges, and usable links), the
-shipped reference dataset and its merge rule (an API value always wins, and a
-dataset that cannot be read leaves the API data untouched), repository and
-gallery request mapping, domain name/origin matching, gallery image
-composition, weight formatting per language, the derived catalog
+raw API values (ratings, binary traits, weight ranges, and usable links),
+repository and gallery request mapping, domain name/origin matching, gallery
+image composition, weight formatting per language, the derived catalog
 view (reveal count, minimum-length hint, debounce, and clearing), a gallery
 failure at provider level, the fixed search area, progressive reveal without
 refetching, the splash handing over to the catalog on its own, search-to-detail,
 the full-screen photo viewer, the photo strategy and placeholder, the no-photo
-state, direct detail
+state, responsive state artwork, direct detail
 routes, language switching, every detail section rendered exactly once,
 related-breed navigation, the
 catalog keeping its state when detail is closed, and layouts at phone, tablet,
@@ -258,22 +247,18 @@ search results; local launch settings remain private.
 - A fresh detail URL fetches the full breed list before selecting its ID.
 - Opening a valid detail performs one additional request for up to eight breed
   photos; if it fails, the primary photo and information remain available.
-- 41 of the 107 live breed entries have no image, so the placeholder is common;
-  that state names the breed's initial and the detail area states that no photo
-  is available.
+- 41 of the 107 live breed entries have no image, so the unavailable
+  artwork is common in the current catalog.
 - Web photos use an HTML `<img>` element because `cdn2.thecatapi.com` sends no
   CORS headers. Such images are not captured by Flutter screenshot or
   `RepaintBoundary` APIs, and colour, opacity, and filter options do not apply
   to them. Mobile and desktop are unaffected.
 - Web images wait for the browser to paint them, so a photo can appear a moment
-  after its card; the placeholder underneath covers that moment instead of
+  after its card; the loading artwork underneath covers that moment instead of
   leaving the frame empty.
-- The bundled reference dataset covers 67 of the 107 live breeds, the ones that
-  ever carried the ratings. A breed outside it shows the factual fields and omits
-  the characteristics and traits sections instead of inventing values.
-- The reference dataset is a capture, not a live call: if The Cat API changes
-  its values, the file has to be refreshed. Its `source` and `capturedAt` fields
-  record where it came from.
+- The current free-plan response omits ratings, binary traits, alternative
+  names, and `wikipedia_url`. Those optional values remain absent unless The Cat
+  API returns them; the app does not bundle a data fallback.
 - The selected interface language resets when the app restarts. API-provided
   content remains in the source language.
 - Desktop browser visuals were reviewed through a locally served release build

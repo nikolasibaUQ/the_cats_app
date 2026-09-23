@@ -4,6 +4,7 @@ import '../../../domain/entities/breed.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/app_state_message.dart';
+import '../../../shared/widgets/localized_state_illustration.dart';
 import '../breeds_catalog_view.dart';
 import 'breed_card.dart';
 
@@ -32,12 +33,16 @@ class BreedsResultsSliver extends StatelessWidget {
       return SliverFillRemaining(
         hasScrollBody: false,
         child: AppStateMessage(
-          icon: view.hasLoadedBreeds
-              ? Icons.search_off_rounded
-              : Icons.pets_outlined,
           title: view.hasLoadedBreeds
               ? strings.noMatchesTitle
               : strings.noBreedsTitle,
+          visual: LocalizedStateIllustration(
+            kind: StateIllustrationKind.notFound,
+            semanticLabel: view.hasLoadedBreeds
+                ? strings.noMatchesTitle
+                : strings.noBreedsTitle,
+            maxWidth: 240,
+          ),
           detail: view.hasLoadedBreeds
               ? strings.noMatchesDetail
               : strings.noBreedsDetail,
