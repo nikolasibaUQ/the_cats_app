@@ -39,9 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted || _navigated) return;
     _navigated = true;
     _navigationTimer?.cancel();
-    if (context.mounted) {
-      context.pushReplacement(AppRoutes.breeds);
-    }
+    context.pushReplacement(AppRoutes.breeds);
   }
 
   @override

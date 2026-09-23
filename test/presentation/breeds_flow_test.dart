@@ -4,10 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/app/app_router.dart';
 import 'package:the_cats_app/app/cats_app.dart';
 import 'package:the_cats_app/di/breeds_dependencies.dart';
-import 'package:the_cats_app/domain/breed.dart';
-import 'package:the_cats_app/domain/breed_flag.dart';
-import 'package:the_cats_app/domain/breed_photo.dart';
-import 'package:the_cats_app/domain/breeds_repository.dart';
+import 'package:the_cats_app/domain/entities/breed.dart';
+import 'package:the_cats_app/domain/entities/breed_flag.dart';
+import 'package:the_cats_app/domain/entities/breed_photo.dart';
+import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/detail/widgets/breed_gallery.dart';
 import 'package:the_cats_app/shared/widgets/app_remote_image.dart';
 
@@ -131,6 +131,22 @@ Finder detailScrollable() => find.byWidgetPredicate(
 );
 
 void main() {
+  testWidgets('the splash hands over to the catalog on its own', (
+    tester,
+  ) async {
+    await pumpApp(tester, repository: _FakeBreedsRepository(), location: '/');
+
+    // While the splash is on screen the catalog is not mounted yet.
+    expect(find.byType(EditableText), findsNothing);
+
+    await tester.pump(const Duration(milliseconds: 1800));
+    await tester.pumpAndSettle();
+
+    // The splash replaces itself, so no extra browser-history stop is created.
+    expect(find.byType(EditableText), findsOneWidget);
+    expect(find.text('Abyssinian'), findsOneWidget);
+  });
+
   testWidgets('search filters breeds and a card opens detail', (tester) async {
     await pumpApp(tester, repository: _FakeBreedsRepository(), location: '/');
     await tester.pump(const Duration(milliseconds: 1800));
@@ -150,21 +166,19 @@ void main() {
 
     await tester.tap(find.text('Bengal'));
     await tester.pumpAndSettle();
-    expect(
-      find.text('United States • Lifespan: 12 - 15 years'),
-      findsOneWidget,
-    );
+    // Origin and life span live in the overview cards only, so each of them is
+    // rendered exactly once in the whole screen.
+    expect(find.text('United States'), findsOneWidget);
+    expect(find.text('12 - 15 years'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.language_rounded));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Español'));
     await tester.pumpAndSettle();
-    expect(
-      find.text('United States • Esperanza de vida: 12 - 15 años'),
-      findsOneWidget,
-    );
-    // Spanish reads kilograms, as the approved mock shows: headline and card.
-    expect(find.text('4 - 7 kg'), findsNWidgets(2));
+    expect(find.text('12 - 15 años'), findsOneWidget);
+    expect(find.text('United States'), findsOneWidget);
+    // Spanish reads kilograms, and the weight card is the only weight on screen.
+    expect(find.text('4 - 7 kg'), findsOneWidget);
     expect(find.byTooltip('Volver a las razas'), findsOneWidget);
   });
 
@@ -183,10 +197,7 @@ void main() {
 
     await tester.tap(find.text('Bengal'));
     await tester.pumpAndSettle();
-    expect(
-      find.text('United States • Lifespan: 12 - 15 years'),
-      findsOneWidget,
-    );
+    expect(find.text('12 - 15 years'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('detail-back')));
     await tester.pumpAndSettle();
@@ -207,10 +218,7 @@ void main() {
       location: '/breeds/beng',
     );
     await tester.pumpAndSettle();
-    expect(
-      find.text('United States • Lifespan: 12 - 15 years'),
-      findsOneWidget,
-    );
+    expect(find.text('12 - 15 years'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('detail-back')));
     await tester.pumpAndSettle();
@@ -230,8 +238,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // English reads pounds and inches: the headline chip and the cards.
-    expect(find.text('8 - 15 lb'), findsNWidgets(2));
+    // English reads pounds and inches, and every fact is listed once: the
+    // overview cards are the only place that repeats data from the header.
+    expect(find.text('8 - 15 lb'), findsOneWidget);
+    expect(find.text('United States'), findsOneWidget);
     expect(find.text('Also known as Bengal Cat'), findsOneWidget);
     expect(find.text('BENG'), findsOneWidget);
 
@@ -253,7 +263,6 @@ void main() {
       'Alert',
       'EXPLORE OTHER BREEDS',
       'Read all article on Wikipedia',
-      'Back to all breeds',
     ]) {
       await tester.scrollUntilVisible(
         find.text(label),
@@ -398,10 +407,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('United States • Lifespan: 12 - 15 years'),
-      findsOneWidget,
-    );
+    expect(find.text('12 - 15 years'), findsOneWidget);
     expect(
       find.ancestor(
         of: find.byType(BreedGallery),
@@ -451,8 +457,9 @@ void main() {
     await tester.pumpAndSettle();
 
     // Facts the API does supply, in the metric system the test locale needs.
-    expect(find.text('Egypt • Lifespan: 14-17 years'), findsOneWidget);
-    expect(find.text('8-12 lb'), findsNWidgets(2));
+    expect(find.text('Egypt'), findsOneWidget);
+    expect(find.text('14-17 years'), findsOneWidget);
+    expect(find.text('8-12 lb'), findsOneWidget);
     for (final label in const ['Natural', '13-16 in', 'HISTORY']) {
       await tester.scrollUntilVisible(
         find.text(label),

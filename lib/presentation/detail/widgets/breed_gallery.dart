@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../domain/breed_photo.dart';
+import '../../../domain/entities/breed_photo.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/responsive.dart';
 import '../../../shared/widgets/app_remote_image.dart';
@@ -19,12 +19,16 @@ class BreedGallery extends StatefulWidget {
     required this.imageUrls,
     required this.photos,
     required this.onRetry,
+    this.label,
   });
 
   /// Primary image first, followed by any photo already loaded.
   final List<String> imageUrls;
 
   final AsyncValue<List<BreedPhoto>> photos;
+
+  /// Breed name the placeholder uses when no photo can be shown.
+  final String? label;
 
   /// Requests the additional photos again.
   final VoidCallback onRetry;
@@ -60,6 +64,7 @@ class _BreedGalleryState extends State<BreedGallery> {
       builder: (context) => BreedFullscreenGallery(
         imageUrls: widget.imageUrls,
         initialIndex: _currentIndex,
+        label: widget.label,
       ),
     );
   }
@@ -77,24 +82,31 @@ class _BreedGalleryState extends State<BreedGallery> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        PageView.builder(
-          controller: _pageController,
-          itemCount: widget.imageUrls.isEmpty ? 1 : widget.imageUrls.length,
-          onPageChanged: (index) => setState(() => _currentIndex = index),
-          itemBuilder: (context, index) {
-            final url = widget.imageUrls.isEmpty
-                ? null
-                : widget.imageUrls[index];
-            return Semantics(
-              button: url != null,
-              label: url == null ? null : strings.openPhotoFullscreen,
+        if (widget.imageUrls.isEmpty)
+          // A breed the API has no photo for: the monogram identifies it and
+          // the caption explains the gap, so the area does not look unfinished.
+          AppRemoteImage(
+            url: null,
+            label: widget.label,
+            caption: strings.noPhoto,
+          )
+        else
+          PageView.builder(
+            controller: _pageController,
+            itemCount: widget.imageUrls.length,
+            onPageChanged: (index) => setState(() => _currentIndex = index),
+            itemBuilder: (context, index) => Semantics(
+              button: true,
+              label: strings.openPhotoFullscreen,
               child: InkWell(
-                onTap: url == null ? null : _openFullscreen,
-                child: AppRemoteImage(url: url),
+                onTap: _openFullscreen,
+                child: AppRemoteImage(
+                  url: widget.imageUrls[index],
+                  label: widget.label,
+                ),
               ),
-            );
-          },
-        ),
+            ),
+          ),
         if (widget.imageUrls.isNotEmpty)
           Positioned(
             left: responsive.spacing(12),

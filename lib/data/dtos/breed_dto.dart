@@ -1,8 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../domain/breed.dart';
-import '../domain/breed_flag.dart';
-import 'url_value.dart';
+import '../../domain/entities/breed.dart';
+import '../../domain/entities/breed_flag.dart';
+import '../mappers/json_values.dart';
 
 part 'breed_dto.g.dart';
 
@@ -109,31 +109,31 @@ class BreedDto {
     return Breed(
       id: id,
       name: name,
-      description: _nonBlank(description),
-      origin: _nonBlank(origin),
-      temperament: _nonBlank(temperament),
-      lifeSpan: _nonBlank(lifeSpan),
+      description: nonBlank(description),
+      origin: nonBlank(origin),
+      temperament: nonBlank(temperament),
+      lifeSpan: nonBlank(lifeSpan),
       imageUrl: absoluteUrl(image?.url),
-      weightMetric: _nonBlank(weight?.metric),
-      weightImperial: _nonBlank(weight?.imperial),
-      heightMetric: _nonBlank(height?.metric),
-      heightImperial: _nonBlank(height?.imperial),
-      altNames: _nonBlank(altNames),
-      breedGroup: _nonBlank(breedGroup),
-      history: _nonBlank(history),
+      weightMetric: nonBlank(weight?.metric),
+      weightImperial: nonBlank(weight?.imperial),
+      heightMetric: nonBlank(height?.metric),
+      heightImperial: nonBlank(height?.imperial),
+      altNames: nonBlank(altNames),
+      breedGroup: nonBlank(breedGroup),
+      history: nonBlank(history),
       wikipediaUrl: absoluteUrl(wikipediaUrl),
-      adaptability: _rating(adaptability),
-      affectionLevel: _rating(affectionLevel),
-      childFriendly: _rating(childFriendly),
-      dogFriendly: _rating(dogFriendly),
-      energyLevel: _rating(energyLevel),
-      grooming: _rating(grooming),
-      healthIssues: _rating(healthIssues),
-      intelligence: _rating(intelligence),
-      sheddingLevel: _rating(sheddingLevel),
-      socialNeeds: _rating(socialNeeds),
-      strangerFriendly: _rating(strangerFriendly),
-      vocalisation: _rating(vocalisation),
+      adaptability: rating(adaptability),
+      affectionLevel: rating(affectionLevel),
+      childFriendly: rating(childFriendly),
+      dogFriendly: rating(dogFriendly),
+      energyLevel: rating(energyLevel),
+      grooming: rating(grooming),
+      healthIssues: rating(healthIssues),
+      intelligence: rating(intelligence),
+      sheddingLevel: rating(sheddingLevel),
+      socialNeeds: rating(socialNeeds),
+      strangerFriendly: rating(strangerFriendly),
+      vocalisation: rating(vocalisation),
       flags: _flags(),
     );
   }
@@ -141,16 +141,16 @@ class BreedDto {
   /// Traits the API marked as present. Missing or unexpected values stay
   /// absent, so the UI never states a trait the response does not confirm.
   Set<BreedFlag> _flags() => {
-    if (_isPresent(indoor)) BreedFlag.indoor,
-    if (_isPresent(lap)) BreedFlag.lap,
-    if (_isPresent(hypoallergenic)) BreedFlag.hypoallergenic,
-    if (_isPresent(natural)) BreedFlag.natural,
-    if (_isPresent(rare)) BreedFlag.rare,
-    if (_isPresent(rex)) BreedFlag.rex,
-    if (_isPresent(hairless)) BreedFlag.hairless,
-    if (_isPresent(shortLegs)) BreedFlag.shortLegs,
-    if (_isPresent(suppressedTail)) BreedFlag.suppressedTail,
-    if (_isPresent(experimental)) BreedFlag.experimental,
+    if (isPresent(indoor)) BreedFlag.indoor,
+    if (isPresent(lap)) BreedFlag.lap,
+    if (isPresent(hypoallergenic)) BreedFlag.hypoallergenic,
+    if (isPresent(natural)) BreedFlag.natural,
+    if (isPresent(rare)) BreedFlag.rare,
+    if (isPresent(rex)) BreedFlag.rex,
+    if (isPresent(hairless)) BreedFlag.hairless,
+    if (isPresent(shortLegs)) BreedFlag.shortLegs,
+    if (isPresent(suppressedTail)) BreedFlag.suppressedTail,
+    if (isPresent(experimental)) BreedFlag.experimental,
   };
 }
 
@@ -174,20 +174,3 @@ class ImageDto {
 
   final String? url;
 }
-
-String? _nonBlank(String? value) {
-  final trimmed = value?.trim();
-  return trimmed == null || trimmed.isEmpty ? null : trimmed;
-}
-
-/// Interprets a binary API trait: `1`, `0`, or a boolean.
-bool _isPresent(Object? value) => switch (value) {
-  true => true,
-  final int number => number == 1,
-  final String text =>
-    text.trim() == '1' || text.trim().toLowerCase() == 'true',
-  _ => false,
-};
-
-int? _rating(int? value) =>
-    value != null && value >= 1 && value <= 5 ? value : null;

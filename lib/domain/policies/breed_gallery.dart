@@ -1,4 +1,4 @@
-import 'breed_photo.dart';
+import '../entities/breed_photo.dart';
 
 /// Images the detail gallery shows for a breed.
 ///

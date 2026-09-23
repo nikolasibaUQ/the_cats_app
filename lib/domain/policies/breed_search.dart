@@ -1,4 +1,4 @@
-import 'breed.dart';
+import '../entities/breed.dart';
 
 /// Breeds whose name or API-provided origin contain [query].
 ///

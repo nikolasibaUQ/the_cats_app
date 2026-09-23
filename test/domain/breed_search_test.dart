@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:the_cats_app/domain/breed.dart';
-import 'package:the_cats_app/domain/breed_search.dart';
+import 'package:the_cats_app/domain/entities/breed.dart';
+import 'package:the_cats_app/domain/policies/breed_search.dart';
 
 void main() {
   const breeds = <Breed>[

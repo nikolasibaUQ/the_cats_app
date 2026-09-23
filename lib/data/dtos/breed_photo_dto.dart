@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../domain/breed_photo.dart';
-import 'url_value.dart';
+import '../../domain/entities/breed_photo.dart';
+import '../mappers/json_values.dart';
 
 part 'breed_photo_dto.g.dart';
 
@@ -31,10 +31,8 @@ class BreedPhotoDto {
     return BreedPhoto(
       id: normalizedId,
       url: normalizedUrl,
-      width: _positive(width),
-      height: _positive(height),
+      width: positive(width),
+      height: positive(height),
     );
   }
 }
-
-int? _positive(int? value) => value != null && value > 0 ? value : null;

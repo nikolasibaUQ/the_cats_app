@@ -8,10 +8,12 @@ class BreedFullscreenGallery extends StatefulWidget {
     super.key,
     required this.imageUrls,
     required this.initialIndex,
+    this.label,
   });
 
   final List<String> imageUrls;
   final int initialIndex;
+  final String? label;
 
   @override
   State<BreedFullscreenGallery> createState() => _BreedFullscreenGalleryState();
@@ -69,6 +71,7 @@ class _BreedFullscreenGalleryState extends State<BreedFullscreenGallery> {
               child: Center(
                 child: AppRemoteImage(
                   url: widget.imageUrls[index],
+                  label: widget.label,
                   fit: BoxFit.contain,
                 ),
               ),

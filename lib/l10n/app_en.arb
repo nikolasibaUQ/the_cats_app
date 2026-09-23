@@ -47,18 +47,8 @@
       }
     }
   },
-  "breedSummary": "{origin} • Lifespan: {lifespan}",
-  "@breedSummary": {
-    "placeholders": {
-      "origin": {
-        "type": "String"
-      },
-      "lifespan": {
-        "type": "String"
-      }
-    }
-  },
   "alsoKnownAs": "Also known as {names}",
+  "noPhoto": "No photo available for this breed",
   "@alsoKnownAs": {
     "placeholders": {
       "names": {
@@ -159,7 +149,6 @@
   "wikipediaTitle": "Read all article on Wikipedia",
   "openLink": "Open",
   "linkOpenError": "Could not open the link.",
-  "backToAllBreeds": "Back to all breeds",
   "language": "Language",
   "systemLanguage": "System language",
   "english": "English",

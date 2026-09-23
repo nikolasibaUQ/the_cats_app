@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:the_cats_app/domain/breed_photo.dart';
+import 'package:the_cats_app/domain/entities/breed_photo.dart';
 import 'package:the_cats_app/l10n/generated/app_localizations.dart';
 import 'package:the_cats_app/presentation/detail/widgets/breed_gallery.dart';
 
@@ -43,5 +43,35 @@ void main() {
     expect(find.text('Photo 2 of 2'), findsWidgets);
     expect(find.byTooltip('Previous photo'), findsWidgets);
     expect(find.byType(InteractiveViewer), findsOneWidget);
+  });
+
+  testWidgets('explains a breed without photos instead of an empty box', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SizedBox(
+            width: 400,
+            height: 400,
+            child: BreedGallery(
+              imageUrls: const [],
+              photos: const AsyncData(<BreedPhoto>[]),
+              onRetry: _retryPhotos,
+              label: 'American Ringtail',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // The monogram identifies the breed and the caption explains the gap, so a
+    // breed without photos never looks like a screen that failed to load.
+    expect(find.text('A'), findsOneWidget);
+    expect(find.text('No photo available for this breed'), findsOneWidget);
+    expect(find.byType(PageView), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 }

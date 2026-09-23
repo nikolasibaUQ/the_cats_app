@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/breed.dart';
-import '../../../domain/breed_flag.dart';
+import '../../../domain/entities/breed.dart';
+import '../../../domain/entities/breed_flag.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/responsive.dart';
 import '../../../shared/widgets/rating_dots.dart';
@@ -29,7 +29,6 @@ class BreedInformation extends StatelessWidget {
       metric: strings.heightMetricValue,
       imperial: strings.heightImperialValue,
     );
-    final summary = _summary(strings, breed);
     final temperament = _split(breed.temperament);
     final ratings = <(String, int?)>[
       (strings.intelligence, breed.intelligence),
@@ -81,32 +80,12 @@ class BreedInformation extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Text(
-                breed.name,
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            if (weightLabel != null) ...[
-              SizedBox(width: responsive.spacing(12)),
-              _WeightChip(label: weightLabel),
-            ],
-          ],
-        ),
-        if (summary != null) ...[
-          SizedBox(height: responsive.spacing(6)),
-          Text(
-            summary,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+        Text(
+          breed.name,
+          style: theme.textTheme.headlineLarge?.copyWith(
+            fontWeight: FontWeight.bold,
           ),
-        ],
+        ),
         if (breed.altNames != null) ...[
           SizedBox(height: responsive.spacing(4)),
           Text(
@@ -171,7 +150,7 @@ class BreedInformation extends StatelessWidget {
             children: [
               for (final flag in BreedFlag.values)
                 if (breed.flags.contains(flag))
-                  _TraitChip(label: _flagLabel(strings, flag)),
+                  _TraitChip(label: _flagLabel(strings, flag), tinted: true),
             ],
           ),
         ],
@@ -190,21 +169,6 @@ class BreedInformation extends StatelessWidget {
       ],
     );
   }
-}
-
-/// Origin and life span on one line, as the approved detail layout shows them.
-///
-/// Each part is dropped when the API does not supply it, so the line never
-/// contains an empty fragment or a dangling separator.
-String? _summary(AppLocalizations strings, Breed breed) {
-  final origin = breed.origin;
-  final lifeSpan = breed.lifeSpan;
-  if (origin != null && lifeSpan != null) {
-    return strings.breedSummary(origin, strings.lifeSpanValue(lifeSpan));
-  }
-  if (origin != null) return origin;
-  if (lifeSpan != null) return strings.lifeSpanValue(lifeSpan);
-  return null;
 }
 
 /// Applies the unit that matches the range the API supplied.
@@ -260,39 +224,6 @@ class _SurfacePanel extends StatelessWidget {
         border: Border.all(color: colors.outlineVariant),
       ),
       child: child,
-    );
-  }
-}
-
-/// Small value on a soft primary surface, used for the headline weight.
-class _WeightChip extends StatelessWidget {
-  const _WeightChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final responsive = Responsive.of(context);
-    final colors = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.primary.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(responsive.radius(20)),
-        border: Border.all(color: colors.primary.withValues(alpha: 0.30)),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: responsive.spacing(14),
-          vertical: responsive.spacing(6),
-        ),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: colors.primary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
     );
   }
 }
@@ -387,18 +318,31 @@ class _FactCard extends StatelessWidget {
 }
 
 /// Outlined pill for single-word breed qualities.
+///
+/// Traits the breed has are tinted so this row does not read as a copy of the
+/// temperament row below it.
 class _TraitChip extends StatelessWidget {
-  const _TraitChip({required this.label});
+  const _TraitChip({required this.label, this.tinted = false});
 
   final String label;
+  final bool tinted;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Chip(
       label: Text(label),
-      backgroundColor: colors.surfaceContainer,
-      side: BorderSide(color: colors.outlineVariant),
+      backgroundColor: tinted
+          ? colors.primary.withValues(alpha: 0.10)
+          : colors.surfaceContainer,
+      labelStyle: tinted
+          ? TextStyle(color: colors.primary, fontWeight: FontWeight.w600)
+          : null,
+      side: BorderSide(
+        color: tinted
+            ? colors.primary.withValues(alpha: 0.30)
+            : colors.outlineVariant,
+      ),
     );
   }
 }

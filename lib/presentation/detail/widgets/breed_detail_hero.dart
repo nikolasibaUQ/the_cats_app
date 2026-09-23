@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/language_menu.dart';
-import '../../../domain/breed.dart';
-import '../../../domain/breed_photo.dart';
+import '../../../domain/entities/breed.dart';
+import '../../../domain/entities/breed_photo.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/responsive.dart';
 import '../../../shared/widgets/overlay_circle_surface.dart';
@@ -39,7 +39,6 @@ class BreedDetailHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
     final responsive = Responsive.of(context);
-    final colors = Theme.of(context).colorScheme;
     return ClipRRect(
       borderRadius: borderRadius,
       child: Stack(
@@ -49,6 +48,7 @@ class BreedDetailHero extends StatelessWidget {
             imageUrls: imageUrls,
             photos: photos,
             onRetry: onRetryGallery,
+            label: breed.name,
           ),
           Positioned(
             top: responsive.spacing(12),
@@ -65,20 +65,7 @@ class BreedDetailHero extends StatelessWidget {
           Positioned(
             top: responsive.spacing(12),
             right: responsive.spacing(12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const OverlayCircleSurface(child: LanguageMenu()),
-                if (breed.origin != null) ...[
-                  SizedBox(width: responsive.spacing(8)),
-                  _HeroLabel(
-                    label: breed.origin!,
-                    background: colors.surface.withValues(alpha: 0.92),
-                    foreground: colors.onSurface,
-                  ),
-                ],
-              ],
-            ),
+            child: const OverlayCircleSurface(child: LanguageMenu()),
           ),
           Positioned(
             right: responsive.spacing(12),

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
-import 'breed_dto.dart';
-import 'breed_photo_dto.dart';
+import '../dtos/breed_dto.dart';
+import '../dtos/breed_photo_dto.dart';
 
 abstract interface class BreedsRemoteDataSource {
   Future<List<BreedDto>> getBreeds();

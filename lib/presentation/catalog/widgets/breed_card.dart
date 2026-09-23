@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/breed.dart';
+import '../../../domain/entities/breed.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/responsive.dart';
 import '../../../shared/widgets/app_remote_image.dart';
@@ -41,7 +41,9 @@ class BreedCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: AppRemoteImage(url: breed.imageUrl)),
+            Expanded(
+              child: AppRemoteImage(url: breed.imageUrl, label: breed.name),
+            ),
             Padding(
               padding: EdgeInsets.all(responsive.spacing(16)),
               child: Column(

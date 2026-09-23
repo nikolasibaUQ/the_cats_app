@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/breed.dart';
+import '../../../domain/entities/breed.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/responsive.dart';
 import '../../../shared/widgets/section_title.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:the_cats_app/domain/breed_gallery.dart';
-import 'package:the_cats_app/domain/breed_photo.dart';
+import 'package:the_cats_app/domain/entities/breed_photo.dart';
+import 'package:the_cats_app/domain/policies/breed_gallery.dart';
 
 void main() {
   const photos = <BreedPhoto>[

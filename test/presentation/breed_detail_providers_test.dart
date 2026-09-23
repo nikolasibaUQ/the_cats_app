@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/di/breeds_dependencies.dart';
-import 'package:the_cats_app/domain/breed.dart';
-import 'package:the_cats_app/domain/breed_photo.dart';
-import 'package:the_cats_app/domain/breeds_repository.dart';
+import 'package:the_cats_app/domain/entities/breed.dart';
+import 'package:the_cats_app/domain/entities/breed_photo.dart';
+import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/detail/breed_detail_providers.dart';
 
 const String _primaryImage = 'https://example.com/beng.jpg';

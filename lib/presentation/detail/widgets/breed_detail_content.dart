@@ -3,8 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../domain/breed.dart';
-import '../../../domain/breed_photo.dart';
+import '../../../domain/entities/breed.dart';
+import '../../../domain/entities/breed_photo.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/responsive.dart';
 import '../../breed_formatting.dart';
@@ -55,8 +55,6 @@ class BreedDetailContent extends StatelessWidget {
         title: strings.wikipediaTitle,
         url: breedArticleUrl(breed),
       ),
-      SizedBox(height: responsive.spacing(28)),
-      _BackToAllBreedsButton(label: strings.backToAllBreeds, onPressed: onBack),
     ];
     return SafeArea(
       child: Center(
@@ -122,22 +120,4 @@ class BreedDetailContent extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Closing action that returns to the full catalog at the end of the page.
-class _BackToAllBreedsButton extends StatelessWidget {
-  const _BackToAllBreedsButton({required this.label, required this.onPressed});
-
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) => Align(
-    alignment: Alignment.center,
-    child: OutlinedButton.icon(
-      onPressed: onPressed,
-      icon: const Icon(Icons.arrow_back_rounded),
-      label: Text(label),
-    ),
-  );
 }

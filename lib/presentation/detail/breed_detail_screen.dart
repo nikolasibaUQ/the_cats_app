@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/app_routes.dart';
 import '../../app/language_menu.dart';
-import '../../domain/breed.dart';
+import '../../domain/entities/breed.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/widgets/app_state_message.dart';
 import 'breed_detail_providers.dart';

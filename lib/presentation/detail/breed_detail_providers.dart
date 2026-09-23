@@ -1,9 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../di/breeds_dependencies.dart';
-import '../../domain/breed.dart';
-import '../../domain/breed_gallery.dart';
-import '../../domain/breed_photo.dart';
+import '../../domain/entities/breed.dart';
+import '../../domain/entities/breed_photo.dart';
+import '../../domain/policies/breed_gallery.dart';
 import '../breeds_providers.dart';
 
 part 'breed_detail_providers.g.dart';

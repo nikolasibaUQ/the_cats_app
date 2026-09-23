@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../data/breeds_remote_data_source.dart';
-import '../data/breeds_repository_impl.dart';
-import '../domain/breeds_repository.dart';
+import '../data/repositories/breeds_repository_impl.dart';
+import '../data/sources/breeds_remote_data_source.dart';
+import '../domain/repositories/breeds_repository.dart';
 
 part 'breeds_dependencies.g.dart';
 

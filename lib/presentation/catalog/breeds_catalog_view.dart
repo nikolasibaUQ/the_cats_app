@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../domain/breed.dart';
-import '../../domain/breed_search.dart';
+import '../../domain/entities/breed.dart';
+import '../../domain/policies/breed_search.dart';
 import '../breeds_providers.dart';
 import 'breeds_catalog_controller.dart';
 

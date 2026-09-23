@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/di/breeds_dependencies.dart';
-import 'package:the_cats_app/domain/breed.dart';
-import 'package:the_cats_app/domain/breed_photo.dart';
-import 'package:the_cats_app/domain/breeds_repository.dart';
+import 'package:the_cats_app/domain/entities/breed.dart';
+import 'package:the_cats_app/domain/entities/breed_photo.dart';
+import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/breeds_providers.dart';
 import 'package:the_cats_app/presentation/catalog/breeds_catalog_controller.dart';
 import 'package:the_cats_app/presentation/catalog/breeds_catalog_view.dart';

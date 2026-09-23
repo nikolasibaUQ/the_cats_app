@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:the_cats_app/data/breed_dto.dart';
-import 'package:the_cats_app/data/breed_photo_dto.dart';
-import 'package:the_cats_app/domain/breed_flag.dart';
+import 'package:the_cats_app/data/dtos/breed_dto.dart';
+import 'package:the_cats_app/data/dtos/breed_photo_dto.dart';
+import 'package:the_cats_app/domain/entities/breed_flag.dart';
 
 void main() {
   test('parses an API breed and normalizes optional values', () {

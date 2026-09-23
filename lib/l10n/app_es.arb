@@ -47,18 +47,8 @@
       }
     }
   },
-  "breedSummary": "{origin} • Esperanza de vida: {lifespan}",
-  "@breedSummary": {
-    "placeholders": {
-      "origin": {
-        "type": "String"
-      },
-      "lifespan": {
-        "type": "String"
-      }
-    }
-  },
   "alsoKnownAs": "También conocido como {names}",
+  "noPhoto": "No hay foto disponible de esta raza",
   "@alsoKnownAs": {
     "placeholders": {
       "names": {
@@ -159,7 +149,6 @@
   "wikipediaTitle": "Lee el artículo completo en Wikipedia",
   "openLink": "Abrir",
   "linkOpenError": "No se pudo abrir el enlace.",
-  "backToAllBreeds": "Volver a todas las razas",
   "language": "Idioma",
   "systemLanguage": "Idioma del sistema",
   "english": "English",
