@@ -11,7 +11,7 @@ COPY . .
 RUN dart run build_runner build --delete-conflicting-outputs
 RUN flutter gen-l10n
 
-RUN flutter build web --release --dart-define-from-file=.env
+RUN flutter build web --release --dart-define-from-file=.env.example
 
 
 FROM nginx:alpine

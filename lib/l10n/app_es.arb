@@ -31,16 +31,46 @@
   "backToBreeds": "Volver a las razas",
   "detailErrorTitle": "No se pudo cargar esta raza",
   "breedNotFound": "Raza no encontrada",
-  "fromOrigin": "Origen: {origin}",
-  "@fromOrigin": {
+  "openPhotoFullscreen": "Ver foto en pantalla completa",
+  "closePhotoViewer": "Cerrar visor de fotos",
+  "previousPhoto": "Foto anterior",
+  "nextPhoto": "Foto siguiente",
+  "retryGallery": "Reintentar fotos",
+  "photoPosition": "Foto {current} de {total}",
+  "@photoPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "breedSummary": "{origin} • Esperanza de vida: {lifespan}",
+  "@breedSummary": {
     "placeholders": {
       "origin": {
+        "type": "String"
+      },
+      "lifespan": {
         "type": "String"
       }
     }
   },
-  "atGlance": "De un vistazo",
+  "alsoKnownAs": "También conocido como {names}",
+  "@alsoKnownAs": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "overview": "Resumen",
+  "origin": "Origen",
+  "group": "Grupo de raza",
   "descriptionTitle": "Descripción",
+  "historyTitle": "Historia",
   "temperament": "Temperamento",
   "lifeSpan": "Esperanza de vida",
   "lifeSpanValue": "{years} años",
@@ -52,30 +82,52 @@
     }
   },
   "weight": "Peso",
-  "factValue": "{label}: {value}",
-  "@factValue": {
+  "weightMetricValue": "{value} kg",
+  "@weightMetricValue": {
     "placeholders": {
-      "label": {
-        "type": "String"
-      },
       "value": {
         "type": "String"
       }
     }
   },
-  "weightValue": "{kilograms} kg",
-  "@weightValue": {
+  "weightImperialValue": "{value} lb",
+  "@weightImperialValue": {
     "placeholders": {
-      "kilograms": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "height": "Altura",
+  "heightMetricValue": "{value} cm",
+  "@heightMetricValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "heightImperialValue": "{value} in",
+  "@heightImperialValue": {
+    "placeholders": {
+      "value": {
         "type": "String"
       }
     }
   },
   "characteristics": "Características",
+  "adaptability": "Adaptabilidad",
   "affection": "Afecto",
   "energy": "Energía",
   "groomingNeeds": "Necesidades de aseo",
   "intelligence": "Inteligencia",
+  "childFriendly": "Amigable con niños",
+  "dogFriendly": "Amigable con perros",
+  "strangerFriendly": "Amigable con extraños",
+  "socialNeeds": "Necesita compañía",
+  "sheddingLevel": "Muda de pelo",
+  "healthIssues": "Problemas de salud",
+  "vocalisation": "Vocalización",
   "ratingValue": "{value} / 5",
   "@ratingValue": {
     "placeholders": {
@@ -84,6 +136,30 @@
       }
     }
   },
+  "traitsTitle": "Rasgos",
+  "flagIndoor": "Para interior",
+  "flagLap": "Gato de regazo",
+  "flagHypoallergenic": "Hipoalergénico",
+  "flagNatural": "Raza natural",
+  "flagRare": "Rara",
+  "flagRex": "Rex",
+  "flagHairless": "Sin pelo",
+  "flagShortLegs": "Patas cortas",
+  "flagSuppressedTail": "Cola corta",
+  "flagExperimental": "Experimental",
+  "relatedBreeds": "Explora otras razas",
+  "moreBreeds": "{count} más",
+  "@moreBreeds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wikipediaTitle": "Lee el artículo completo en Wikipedia",
+  "openLink": "Abrir",
+  "linkOpenError": "No se pudo abrir el enlace.",
+  "backToAllBreeds": "Volver a todas las razas",
   "language": "Idioma",
   "systemLanguage": "Idioma del sistema",
   "english": "English",

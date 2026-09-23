@@ -31,16 +31,46 @@
   "backToBreeds": "Back to breeds",
   "detailErrorTitle": "Could not load this breed",
   "breedNotFound": "Breed not found",
-  "fromOrigin": "From {origin}",
-  "@fromOrigin": {
+  "openPhotoFullscreen": "View photo full screen",
+  "closePhotoViewer": "Close photo viewer",
+  "previousPhoto": "Previous photo",
+  "nextPhoto": "Next photo",
+  "retryGallery": "Retry photos",
+  "photoPosition": "Photo {current} of {total}",
+  "@photoPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "breedSummary": "{origin} • Lifespan: {lifespan}",
+  "@breedSummary": {
     "placeholders": {
       "origin": {
+        "type": "String"
+      },
+      "lifespan": {
         "type": "String"
       }
     }
   },
-  "atGlance": "At a glance",
+  "alsoKnownAs": "Also known as {names}",
+  "@alsoKnownAs": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "overview": "Overview",
+  "origin": "Origin",
+  "group": "Breed group",
   "descriptionTitle": "Description",
+  "historyTitle": "History",
   "temperament": "Temperament",
   "lifeSpan": "Life span",
   "lifeSpanValue": "{years} years",
@@ -52,30 +82,52 @@
     }
   },
   "weight": "Weight",
-  "factValue": "{label}: {value}",
-  "@factValue": {
+  "weightMetricValue": "{value} kg",
+  "@weightMetricValue": {
     "placeholders": {
-      "label": {
-        "type": "String"
-      },
       "value": {
         "type": "String"
       }
     }
   },
-  "weightValue": "{kilograms} kg",
-  "@weightValue": {
+  "weightImperialValue": "{value} lb",
+  "@weightImperialValue": {
     "placeholders": {
-      "kilograms": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "height": "Height",
+  "heightMetricValue": "{value} cm",
+  "@heightMetricValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "heightImperialValue": "{value} in",
+  "@heightImperialValue": {
+    "placeholders": {
+      "value": {
         "type": "String"
       }
     }
   },
   "characteristics": "Characteristics",
+  "adaptability": "Adaptability",
   "affection": "Affection",
   "energy": "Energy",
   "groomingNeeds": "Grooming needs",
   "intelligence": "Intelligence",
+  "childFriendly": "Child friendly",
+  "dogFriendly": "Dog friendly",
+  "strangerFriendly": "Stranger friendly",
+  "socialNeeds": "Social needs",
+  "sheddingLevel": "Shedding",
+  "healthIssues": "Health issues",
+  "vocalisation": "Vocalisation",
   "ratingValue": "{value} / 5",
   "@ratingValue": {
     "placeholders": {
@@ -84,6 +136,30 @@
       }
     }
   },
+  "traitsTitle": "Traits",
+  "flagIndoor": "Indoor",
+  "flagLap": "Lap cat",
+  "flagHypoallergenic": "Hypoallergenic",
+  "flagNatural": "Natural breed",
+  "flagRare": "Rare",
+  "flagRex": "Rex",
+  "flagHairless": "Hairless",
+  "flagShortLegs": "Short legs",
+  "flagSuppressedTail": "Short tail",
+  "flagExperimental": "Experimental",
+  "relatedBreeds": "Explore other breeds",
+  "moreBreeds": "{count} more",
+  "@moreBreeds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wikipediaTitle": "Read all article on Wikipedia",
+  "openLink": "Open",
+  "linkOpenError": "Could not open the link.",
+  "backToAllBreeds": "Back to all breeds",
   "language": "Language",
   "systemLanguage": "System language",
   "english": "English",

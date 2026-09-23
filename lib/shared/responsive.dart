@@ -19,11 +19,9 @@ class Responsive {
   double get diagonal => math.sqrt(width * width + height * height);
   bool get isTablet => _viewport.shortestSide >= 600;
   bool get isDesktop => width >= 1024;
-  bool get isLandscape => width > height;
 
   double wp(double percent) => width * percent / 100;
   double hp(double percent) => height * percent / 100;
-  double dp(double percent) => diagonal * percent / 100;
 
   double get _spacingScale {
     if (width < 360) return 0.90;
@@ -38,18 +36,6 @@ class Responsive {
   double radius(num value) => size(value);
   double icon(num value) => size(value);
   double get pagePadding => spacing(isDesktop ? 32 : 20);
-
-  EdgeInsets insets({
-    double left = 0,
-    double top = 0,
-    double right = 0,
-    double bottom = 0,
-  }) => EdgeInsets.fromLTRB(
-    spacing(left),
-    spacing(top),
-    spacing(right),
-    spacing(bottom),
-  );
 
   EdgeInsets symmetric({double horizontal = 0, double vertical = 0}) =>
       EdgeInsets.symmetric(
