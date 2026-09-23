@@ -42,9 +42,53 @@ void main() {
     expect(breeds.single.imageUrl, 'https://example.com/cat.jpg');
   });
 
+  test('maps the size the API states for the primary photo', () async {
+    final dio = dioReturning([
+      {
+        'id': 'abys',
+        'name': 'Abyssinian',
+        'image': {
+          'url': 'https://cdn2.thecatapi.com/images/abys.jpg',
+          'width': 3114,
+          'height': 2609,
+        },
+      },
+      {
+        'id': 'amer',
+        'name': 'American Ringtail',
+        'image': {
+          'url': 'https://cdn2.thecatapi.com/images/amer.jpg',
+          'width': 0,
+          'height': 0,
+        },
+      },
+    ]);
+
+    final breeds = await BreedsRepositoryImpl(
+      remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
+      referenceSource: referenceSource('{"breeds": {}}'),
+    ).getBreeds();
+
+    // The detail photo area frames the photo with this proportion.
+    expect(breeds.first.imageWidth, 3114);
+    expect(breeds.first.imageHeight, 2609);
+    // A size that cannot be one stays unknown instead of shaping the area.
+    expect(breeds.last.imageWidth, isNull);
+    expect(breeds.last.imageHeight, isNull);
+  });
+
   test('fills the attributes the live response no longer carries', () async {
     final dio = dioReturning([
-      {'id': 'beng', 'name': 'Bengal', 'origin': 'United States'},
+      {
+        'id': 'beng',
+        'name': 'Bengal',
+        'origin': 'United States',
+        'image': {
+          'url': 'https://cdn2.thecatapi.com/images/beng.jpg',
+          'width': 1600,
+          'height': 1000,
+        },
+      },
     ]);
     final references = referenceSource(
       '{"breeds": {"beng": {"adaptability": 5, "intelligence": 5,'
@@ -64,6 +108,14 @@ void main() {
       'https://en.wikipedia.org/wiki/Bengal_(cat)',
     );
     expect(breeds.single.origin, 'United States');
+    // The reference fills gaps only, so the photo size the API states survives
+    // and the detail area can still frame the photo with it.
+    expect(
+      breeds.single.imageUrl,
+      'https://cdn2.thecatapi.com/images/beng.jpg',
+    );
+    expect(breeds.single.imageWidth, 1600);
+    expect(breeds.single.imageHeight, 1000);
   });
 
   test('keeps the API data when the bundled dataset cannot be read', () async {

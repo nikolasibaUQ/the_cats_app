@@ -83,11 +83,11 @@ class _BreedDetailBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final photos = ref.watch(breedPhotosProvider(breed.id));
+    final photoRequest = ref.watch(breedPhotosProvider(breed.id));
     return BreedDetailContent(
       breed: breed,
-      imageUrls: ref.watch(breedGalleryImagesProvider(breed.id)),
-      photos: photos,
+      photos: ref.watch(breedGalleryPhotosProvider(breed.id)),
+      photoRequest: photoRequest,
       relatedBreeds: ref.watch(relatedBreedsProvider(breed.id)),
       onRetryGallery: () {
         ref.invalidate(breedPhotosProvider(breed.id));

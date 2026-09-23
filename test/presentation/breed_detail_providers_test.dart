@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/di/breeds_dependencies.dart';
 import 'package:the_cats_app/domain/entities/breed.dart';
 import 'package:the_cats_app/domain/entities/breed_photo.dart';
+import 'package:the_cats_app/domain/policies/breed_gallery.dart';
 import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/detail/breed_detail_providers.dart';
 
@@ -11,7 +12,13 @@ const String _primaryImage = 'https://example.com/beng.jpg';
 class _FailingPhotosRepository implements BreedsRepository {
   @override
   Future<List<Breed>> getBreeds() async => const [
-    Breed(id: 'beng', name: 'Bengal', imageUrl: _primaryImage),
+    Breed(
+      id: 'beng',
+      name: 'Bengal',
+      imageUrl: _primaryImage,
+      imageWidth: 1600,
+      imageHeight: 1000,
+    ),
   ];
 
   @override
@@ -32,12 +39,12 @@ void main() {
   });
 
   test(
-    'keeps the primary image available when the photo request fails',
+    'keeps the primary photo available when the photo request fails',
     () async {
       // Keeps the gallery chain alive, so the states below are the same
       // elements the screen would observe.
       final subscription = container.listen(
-        breedGalleryImagesProvider('beng'),
+        breedGalleryPhotosProvider('beng'),
         (previous, next) {},
       );
       addTearDown(subscription.close);
@@ -47,8 +54,9 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 20));
 
       expect(container.read(breedPhotosProvider('beng')).hasError, isTrue);
-      expect(container.read(breedGalleryImagesProvider('beng')), [
-        _primaryImage,
+      // The size travels with the photo: the detail area adopts its shape.
+      expect(container.read(breedGalleryPhotosProvider('beng')), <GalleryPhoto>[
+        (url: _primaryImage, width: 1600, height: 1000),
       ]);
     },
   );

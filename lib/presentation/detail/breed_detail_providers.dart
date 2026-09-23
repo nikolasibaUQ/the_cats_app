@@ -37,17 +37,21 @@ List<Breed> relatedBreeds(Ref ref, String breedId) {
   ];
 }
 
-/// Gallery images for the selected breed: the primary image followed by every
+/// Photos the detail gallery shows: the breed's primary photo followed by every
 /// photo already loaded.
 ///
 /// Merging and deduplication are domain rules, and resolving them here leaves
 /// the gallery with rendering only.
 @riverpod
-List<String> breedGalleryImages(Ref ref, String breedId) {
+List<GalleryPhoto> breedGalleryPhotos(Ref ref, String breedId) {
   final breed = ref.watch(breedByIdProvider(breedId)).value;
   final photos = ref.watch(breedPhotosProvider(breedId));
-  return breedGalleryImageUrls(
-    primaryUrl: breed?.imageUrl,
+  final imageUrl = breed?.imageUrl;
+  final merged = mergeGalleryPhotos(
+    primary: breed == null || imageUrl == null
+        ? null
+        : (url: imageUrl, width: breed.imageWidth, height: breed.imageHeight),
     photos: photos.value ?? const <BreedPhoto>[],
   );
+  return merged;
 }

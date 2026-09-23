@@ -14,6 +14,8 @@ class Breed {
     this.lifeSpan,
     this.weightMetric,
     this.imageUrl,
+    this.imageWidth,
+    this.imageHeight,
     this.heightMetric,
     this.heightImperial,
     this.breedGroup,
@@ -43,6 +45,12 @@ class Breed {
   final String? temperament;
   final String? lifeSpan;
   final String? imageUrl;
+
+  /// Pixel size the API reports for [imageUrl], when it states one. The detail
+  /// photo area uses it to adopt the shape of the photo instead of scaling it
+  /// into a frame of a different proportion.
+  final int? imageWidth;
+  final int? imageHeight;
 
   /// Weight ranges exactly as the API states them, one per measurement system.
   final String? weightMetric;

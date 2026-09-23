@@ -1,33 +1,40 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/language_menu.dart';
 import '../../../domain/entities/breed.dart';
 import '../../../domain/entities/breed_photo.dart';
+import '../../../domain/policies/breed_gallery.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/overlay_circle_surface.dart';
+import '../../photo_framing.dart';
 import 'breed_gallery.dart';
 
-/// Fixed photo area of the detail screen.
+/// Photo area of the detail screen.
 ///
-/// The gallery fills the area and the controls that belong to the screen float
-/// above it: leaving the detail, the language selector, the origin, and the
-/// breed code. The photo never scrolls; only the information below it does.
-class BreedDetailHero extends StatelessWidget {
+/// The area takes the shape of the photo the gallery is showing, bounded by the
+/// space the layout offers, so a landscape photo is not zoomed into a narrow
+/// column and a portrait one is not cropped into a wide band. The gallery fills
+/// the area and the controls that belong to the screen float above it: leaving
+/// the detail, the language selector, and the breed code. The photo area never
+/// scrolls; only the information beside or below it does.
+class BreedDetailHero extends StatefulWidget {
   const BreedDetailHero({
     super.key,
     required this.breed,
-    required this.imageUrls,
     required this.photos,
+    required this.photoRequest,
     required this.onRetryGallery,
     required this.onBack,
     required this.borderRadius,
   });
 
   final Breed breed;
-  final List<String> imageUrls;
-  final AsyncValue<List<BreedPhoto>> photos;
+  final List<GalleryPhoto> photos;
+  final AsyncValue<List<BreedPhoto>> photoRequest;
   final VoidCallback onRetryGallery;
   final VoidCallback onBack;
 
@@ -36,48 +43,98 @@ class BreedDetailHero extends StatelessWidget {
   final BorderRadius borderRadius;
 
   @override
+  State<BreedDetailHero> createState() => _BreedDetailHeroState();
+}
+
+class _BreedDetailHeroState extends State<BreedDetailHero> {
+  /// Photo the gallery is showing. Its shape decides the shape of this area.
+  GalleryPhoto? _photo;
+
+  @override
+  void initState() {
+    super.initState();
+    _photo = widget.photos.firstOrNull;
+  }
+
+  @override
+  void didUpdateWidget(BreedDetailHero oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The gallery returns to the first photo when the list changes, so this area
+    // follows it instead of keeping the shape of a photo that is gone.
+    if (_photo == null || !widget.photos.contains(_photo)) {
+      _photo = widget.photos.firstOrNull;
+    }
+  }
+
+  void _onPhotoChanged(GalleryPhoto photo) {
+    if (photo == _photo) return;
+    setState(() => _photo = photo);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
     final responsive = Responsive.of(context);
-    return ClipRRect(
-      borderRadius: borderRadius,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          BreedGallery(
-            imageUrls: imageUrls,
-            photos: photos,
-            onRetry: onRetryGallery,
-            label: breed.name,
+    final photoAspect = framedPhotoAspect(_photo);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // The area takes the width the layout offers and only leaves that shape
+        // when the available height cannot hold it, so it never overflows the
+        // column or the band the screen reserves.
+        double heightFor(double aspect) =>
+            math.min(constraints.maxWidth / aspect, constraints.maxHeight);
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(end: photoAspect),
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOutCubic,
+          builder: (context, aspect, child) => SizedBox(
+            width: constraints.maxWidth,
+            height: heightFor(aspect),
+            child: child,
           ),
-          Positioned(
-            top: responsive.spacing(12),
-            left: responsive.spacing(12),
-            child: OverlayCircleSurface(
-              key: const Key('detail-back'),
-              child: IconButton(
-                tooltip: strings.backToBreeds,
-                onPressed: onBack,
-                icon: const Icon(Icons.arrow_back_rounded),
-              ),
+          child: ClipRRect(
+            borderRadius: widget.borderRadius,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                BreedGallery(
+                  photos: widget.photos,
+                  photoRequest: widget.photoRequest,
+                  onRetry: widget.onRetryGallery,
+                  label: widget.breed.name,
+                  onPhotoChanged: _onPhotoChanged,
+                ),
+                Positioned(
+                  top: responsive.spacing(12),
+                  left: responsive.spacing(12),
+                  child: OverlayCircleSurface(
+                    key: const Key('detail-back'),
+                    child: IconButton(
+                      tooltip: strings.backToBreeds,
+                      onPressed: widget.onBack,
+                      icon: const Icon(Icons.arrow_back_rounded),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: responsive.spacing(12),
+                  right: responsive.spacing(12),
+                  child: const OverlayCircleSurface(child: LanguageMenu()),
+                ),
+                Positioned(
+                  right: responsive.spacing(12),
+                  bottom: responsive.spacing(12),
+                  child: _HeroLabel(
+                    label: widget.breed.id.toUpperCase(),
+                    background: Colors.black.withValues(alpha: 0.62),
+                    foreground: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
-          Positioned(
-            top: responsive.spacing(12),
-            right: responsive.spacing(12),
-            child: const OverlayCircleSurface(child: LanguageMenu()),
-          ),
-          Positioned(
-            right: responsive.spacing(12),
-            bottom: responsive.spacing(12),
-            child: _HeroLabel(
-              label: breed.id.toUpperCase(),
-              background: Colors.black.withValues(alpha: 0.62),
-              foreground: Colors.white,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

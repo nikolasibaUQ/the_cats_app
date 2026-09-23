@@ -114,6 +114,8 @@ class BreedDto {
       temperament: nonBlank(temperament),
       lifeSpan: nonBlank(lifeSpan),
       imageUrl: absoluteUrl(image?.url),
+      imageWidth: positive(image?.width),
+      imageHeight: positive(image?.height),
       weightMetric: nonBlank(weight?.metric),
       weightImperial: nonBlank(weight?.imperial),
       heightMetric: nonBlank(height?.metric),
@@ -167,10 +169,14 @@ class WeightDto {
 
 @JsonSerializable(createToJson: false)
 class ImageDto {
-  const ImageDto({this.url});
+  const ImageDto({this.url, this.width, this.height});
 
   factory ImageDto.fromJson(Map<String, dynamic> json) =>
       _$ImageDtoFromJson(json);
 
   final String? url;
+
+  /// Pixel size the API reports for the primary photo of the breed.
+  final int? width;
+  final int? height;
 }

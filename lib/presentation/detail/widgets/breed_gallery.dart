@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/entities/breed_photo.dart';
+import '../../../domain/policies/breed_gallery.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/app_remote_image.dart';
@@ -10,28 +11,35 @@ import 'breed_fullscreen_gallery.dart';
 
 /// Renders the breed photo carousel.
 ///
-/// It receives the images to show and the state of the request that loads more
+/// It receives the photos to show and the state of the request that loads more
 /// of them, so the pending indicator and the retry control never replace the
-/// images that are already available.
+/// photos that are already available. The area that frames it sizes itself from
+/// the photo the carousel reports through [onPhotoChanged].
 class BreedGallery extends StatefulWidget {
   const BreedGallery({
     super.key,
-    required this.imageUrls,
     required this.photos,
+    required this.photoRequest,
     required this.onRetry,
     this.label,
+    this.onPhotoChanged,
   });
 
-  /// Primary image first, followed by any photo already loaded.
-  final List<String> imageUrls;
+  /// Primary photo first, followed by any photo already loaded.
+  final List<GalleryPhoto> photos;
 
-  final AsyncValue<List<BreedPhoto>> photos;
+  /// State of the request that loads the additional photos.
+  final AsyncValue<List<BreedPhoto>> photoRequest;
 
   /// Breed name the placeholder uses when no photo can be shown.
   final String? label;
 
   /// Requests the additional photos again.
   final VoidCallback onRetry;
+
+  /// Reports the photo now shown, so the area framing the carousel can adopt
+  /// its shape instead of scaling it into a fixed rectangle.
+  final ValueChanged<GalleryPhoto>? onPhotoChanged;
 
   @override
   State<BreedGallery> createState() => _BreedGalleryState();
@@ -44,7 +52,7 @@ class _BreedGalleryState extends State<BreedGallery> {
   @override
   void didUpdateWidget(BreedGallery oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_currentIndex >= widget.imageUrls.length) {
+    if (_currentIndex >= widget.photos.length) {
       _currentIndex = 0;
       if (_pageController.hasClients) _pageController.jumpToPage(0);
     }
@@ -57,12 +65,12 @@ class _BreedGalleryState extends State<BreedGallery> {
   }
 
   Future<void> _openFullscreen() async {
-    if (widget.imageUrls.isEmpty) return;
+    if (widget.photos.isEmpty) return;
     await showDialog<void>(
       context: context,
       useSafeArea: false,
       builder: (context) => BreedFullscreenGallery(
-        imageUrls: widget.imageUrls,
+        photos: widget.photos,
         initialIndex: _currentIndex,
         label: widget.label,
       ),
@@ -75,6 +83,11 @@ class _BreedGalleryState extends State<BreedGallery> {
     curve: Curves.easeOut,
   );
 
+  void _showIndex(int index) {
+    setState(() => _currentIndex = index);
+    widget.onPhotoChanged?.call(widget.photos[index]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
@@ -82,7 +95,7 @@ class _BreedGalleryState extends State<BreedGallery> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (widget.imageUrls.isEmpty)
+        if (widget.photos.isEmpty)
           // A breed the API has no photo for: the monogram identifies it and
           // the caption explains the gap, so the area does not look unfinished.
           AppRemoteImage(
@@ -93,28 +106,28 @@ class _BreedGalleryState extends State<BreedGallery> {
         else
           PageView.builder(
             controller: _pageController,
-            itemCount: widget.imageUrls.length,
-            onPageChanged: (index) => setState(() => _currentIndex = index),
+            itemCount: widget.photos.length,
+            onPageChanged: _showIndex,
             itemBuilder: (context, index) => Semantics(
               button: true,
               label: strings.openPhotoFullscreen,
               child: InkWell(
                 onTap: _openFullscreen,
                 child: AppRemoteImage(
-                  url: widget.imageUrls[index],
+                  url: widget.photos[index].url,
                   label: widget.label,
                 ),
               ),
             ),
           ),
-        if (widget.imageUrls.isNotEmpty)
+        if (widget.photos.isNotEmpty)
           Positioned(
             left: responsive.spacing(12),
             bottom: responsive.spacing(12),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (widget.imageUrls.length > 1) ...[
+                if (widget.photos.length > 1) ...[
                   DecoratedBox(
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.62),
@@ -130,7 +143,7 @@ class _BreedGalleryState extends State<BreedGallery> {
                       child: Text(
                         strings.photoPosition(
                           _currentIndex + 1,
-                          widget.imageUrls.length,
+                          widget.photos.length,
                         ),
                         style: Theme.of(
                           context,
@@ -161,7 +174,7 @@ class _BreedGalleryState extends State<BreedGallery> {
               ),
             ),
           ),
-        if (_currentIndex + 1 < widget.imageUrls.length)
+        if (_currentIndex + 1 < widget.photos.length)
           Align(
             alignment: Alignment.centerRight,
             child: OverlayCircleSurface(
@@ -172,7 +185,7 @@ class _BreedGalleryState extends State<BreedGallery> {
               ),
             ),
           ),
-        if (widget.photos.isLoading)
+        if (widget.photoRequest.isLoading)
           const Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -183,7 +196,7 @@ class _BreedGalleryState extends State<BreedGallery> {
               ),
             ),
           ),
-        if (widget.photos.hasError)
+        if (widget.photoRequest.hasError)
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(

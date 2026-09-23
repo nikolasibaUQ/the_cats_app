@@ -15,7 +15,7 @@ works as a direct Web link.
 | --- | --- |
 | Splash | Entry route moves to the breed list without an extra history stop |
 | Breeds | API list, debounced local search, card with origin and intelligence, progressive reveal, refresh, and complete states |
-| Detail | Fixed photo area with overlaid controls, the facts the app has (origin, group, life span, weight, height), history, ratings and traits, suggestions, and Wikipedia |
+| Detail | Photo area shaped by the photo it shows, with overlaid controls, the facts the app has (origin, group, life span, weight, height), history, ratings and traits, suggestions, and Wikipedia |
 | Languages | Spanish and English UI, with device-language default, in-app selector, and metric/imperial weight |
 | Web hosting | Dockerfile and Nginx route fallback present |
 | Tests | DTO parsing, mapping, reference-dataset merge and precedence, domain search and gallery rules, weight formatting, provider state, image strategy, and interaction flows |
@@ -50,6 +50,8 @@ The UI uses a warm, restrained style and adapts from mobile to wider Web
 layouts. Photos always sit on top of a placeholder that names the breed's
 initial, so a slow download, a failed request, or a missing URL never leaves a
 blank frame; a breed with no photos says so instead of looking unfinished.
+In detail, the photo area adopts the shape of the photo it shows — bounded
+between 3:4 and 3:2 — instead of zooming every photo into the same rectangle.
 Because the image host sends no CORS headers, Web builds render photos through
 an HTML `<img>` element, which is also why the browser console stays clean
 instead of reporting one blocked request per photo. API errors offer retry
@@ -106,7 +108,7 @@ Presentation → Domain repository contract ← Data repository
   makes, from the panel that offers it.
 - **Domain** defines `Breed`, `BreedPhoto`, `BreedFlag`, and the repository
   contract in app terms, with no Flutter, Dio, or JSON dependency. Name/origin
-  matching (`searchBreeds`) and gallery composition (`breedGalleryImageUrls`)
+  matching (`searchBreeds`) and gallery composition (`mergeGalleryPhotos`)
   live here because they are rules rather than drawing code.
 - **Data** keeps Dio and response parsing in a remote data source. It also owns
   the interpretation of raw API values: ratings outside 1–5 become unknown,
@@ -153,6 +155,7 @@ are parsed once and do not need generated `copyWith` or value equality.
 | Prefer the HTML element for Web photos | No blocked request and no repeated CORS error per photo, plus browser caching | Platform-view images are not captured by screenshot APIs |
 | Keep a placeholder under every photo | Loading and failures never leave a blank frame | One extra widget per image |
 | State when a breed has no photos | The empty area reads as intentional instead of unfinished | One more localized string |
+| Shape the detail photo area to the photo | No photo is zoomed just to fill a fixed rectangle | The area changes size between photos, within a bounded band |
 
 The API supports server pagination. This beta keeps one full-list request so
 search covers all breeds and direct detail routes reuse the same cached data;

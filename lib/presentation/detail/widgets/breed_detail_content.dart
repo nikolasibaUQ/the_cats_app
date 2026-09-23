@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/entities/breed.dart';
 import '../../../domain/entities/breed_photo.dart';
+import '../../../domain/policies/breed_gallery.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../breed_formatting.dart';
@@ -13,16 +14,19 @@ import 'breed_information.dart';
 import 'external_link_panel.dart';
 import 'related_breeds_section.dart';
 
-/// Lays out the fixed photo area and the scrolling breed information.
+/// Lays out the photo area and the scrolling breed information.
 ///
-/// Nothing is loaded or mapped here: the breed, its gallery, and the suggested
-/// breeds arrive resolved, and every action is reported back to the screen.
+/// It decides how much room the photo area gets: the whole column beside the
+/// information on wide layouts, a bounded band above it on narrow ones. The area
+/// itself takes the shape of the photo it shows. Nothing is loaded or mapped
+/// here: the breed, its gallery, and the suggested breeds arrive resolved, and
+/// every action is reported back to the screen.
 class BreedDetailContent extends StatelessWidget {
   const BreedDetailContent({
     super.key,
     required this.breed,
-    required this.imageUrls,
     required this.photos,
+    required this.photoRequest,
     required this.relatedBreeds,
     required this.onRetryGallery,
     required this.onBreedSelected,
@@ -31,8 +35,8 @@ class BreedDetailContent extends StatelessWidget {
   });
 
   final Breed breed;
-  final List<String> imageUrls;
-  final AsyncValue<List<BreedPhoto>> photos;
+  final List<GalleryPhoto> photos;
+  final AsyncValue<List<BreedPhoto>> photoRequest;
   final List<Breed> relatedBreeds;
   final VoidCallback onRetryGallery;
   final ValueChanged<Breed> onBreedSelected;
@@ -65,8 +69,8 @@ class BreedDetailContent extends StatelessWidget {
               final narrow = constraints.maxWidth < 760;
               final hero = BreedDetailHero(
                 breed: breed,
-                imageUrls: imageUrls,
                 photos: photos,
+                photoRequest: photoRequest,
                 onRetryGallery: onRetryGallery,
                 onBack: onBack,
                 borderRadius: narrow
@@ -81,13 +85,19 @@ class BreedDetailContent extends StatelessWidget {
                 children: sections,
               );
               if (narrow) {
-                final photoHeight = math.min(
+                // The band bounds how tall the photo area may grow: a portrait
+                // photo keeps its shape up to this height instead of pushing the
+                // information off the screen.
+                final photoBand = math.min(
                   360.0,
                   math.max(160.0, constraints.maxHeight * 0.42),
                 );
                 return Column(
                   children: [
-                    SizedBox(height: photoHeight, child: hero),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: photoBand),
+                      child: hero,
+                    ),
                     SizedBox(height: responsive.spacing(20)),
                     Expanded(
                       child: Padding(
@@ -108,7 +118,13 @@ class BreedDetailContent extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(flex: 5, child: hero),
+                    // The area keeps the photo's shape while the column beside
+                    // it stays as tall as the information it holds, so the photo
+                    // is centred in the room the column gives it.
+                    Expanded(
+                      flex: 5,
+                      child: Align(alignment: Alignment.center, child: hero),
+                    ),
                     SizedBox(width: responsive.spacing(32)),
                     Expanded(flex: 6, child: information),
                   ],

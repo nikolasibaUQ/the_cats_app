@@ -66,6 +66,8 @@ extension BreedReferenceFill on Breed {
       breedGroup: breedGroup,
       history: history,
       imageUrl: imageUrl,
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
       altNames: altNames ?? reference.altNames,
       wikipediaUrl: wikipediaUrl ?? reference.wikipediaUrl,
       adaptability: adaptability ?? reference.adaptability,

@@ -9,6 +9,7 @@ import 'package:the_cats_app/domain/entities/breed_flag.dart';
 import 'package:the_cats_app/domain/entities/breed_photo.dart';
 import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/detail/widgets/breed_gallery.dart';
+import 'package:the_cats_app/presentation/photo_framing.dart';
 import 'package:the_cats_app/shared/widgets/app_remote_image.dart';
 
 class _FakeBreedsRepository implements BreedsRepository {
@@ -106,6 +107,40 @@ class _GalleryFailureRepository extends _FakeBreedsRepository {
   @override
   Future<List<BreedPhoto>> getBreedPhotos(String breedId, {int limit = 8}) =>
       Future<List<BreedPhoto>>.error(Exception('Gallery unavailable'));
+}
+
+/// Breed whose primary photo is landscape while the gallery also holds a
+/// portrait one, like the live data does.
+class _MixedPhotoShapeRepository extends _FakeBreedsRepository {
+  @override
+  Future<List<Breed>> getBreeds() async => const [
+    Breed(
+      id: 'abys',
+      name: 'Abyssinian',
+      imageUrl: 'https://example.invalid/abys.jpg',
+      imageWidth: 1600,
+      imageHeight: 1000,
+    ),
+  ];
+
+  @override
+  Future<List<BreedPhoto>> getBreedPhotos(
+    String breedId, {
+    int limit = 8,
+  }) async => const [
+    BreedPhoto(
+      id: 'photo-1',
+      url: 'https://example.invalid/abys-1.jpg',
+      width: 900,
+      height: 1200,
+    ),
+  ];
+}
+
+/// Proportion of the photo area drawn on screen.
+double photoAreaAspect(WidgetTester tester) {
+  final size = tester.getSize(find.byType(BreedGallery));
+  return size.width / size.height;
 }
 
 /// Pumps the app with a stub repository and an isolated router per test.
@@ -443,6 +478,39 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     await tester.pumpAndSettle();
     expect(imageInsideRow, findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the photo area adopts the shape of the photo it shows', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    await pumpApp(
+      tester,
+      repository: _MixedPhotoShapeRepository(),
+      location: '/breeds/abys',
+    );
+    await tester.pumpAndSettle();
+
+    // The primary photo is 1600x1000, which is 1.6: the area follows it up to
+    // the band, past which it would resize far more than the photo needs.
+    expect(photoAreaAspect(tester), closeTo(maxPhotoAspect, 0.01));
+
+    await tester.tap(find.byTooltip('Next photo'));
+    await tester.pumpAndSettle();
+
+    // The portrait photo reshapes the area instead of being zoomed into the
+    // frame the landscape one needed.
+    expect(photoAreaAspect(tester), closeTo(minPhotoAspect, 0.01));
+
+    // On a narrow screen the area keeps the full width, and the band stops a
+    // portrait photo from pushing the information off the screen.
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    await tester.pumpAndSettle();
+    final area = tester.getSize(find.byType(BreedGallery));
+    expect(area.width, closeTo(390, 1));
+    expect(area.height, lessThanOrEqualTo(360));
     expect(tester.takeException(), isNull);
   });
 

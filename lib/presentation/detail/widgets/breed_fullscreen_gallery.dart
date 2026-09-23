@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 
+import '../../../domain/policies/breed_gallery.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/app_remote_image.dart';
 
+/// Full-screen viewer for the breed photos.
+///
+/// The whole photo is shown inside the viewer, so its controls only page through
+/// the list the gallery already loaded.
 class BreedFullscreenGallery extends StatefulWidget {
   const BreedFullscreenGallery({
     super.key,
-    required this.imageUrls,
+    required this.photos,
     required this.initialIndex,
     this.label,
   });
 
-  final List<String> imageUrls;
+  final List<GalleryPhoto> photos;
   final int initialIndex;
   final String? label;
 
@@ -56,21 +61,21 @@ class _BreedFullscreenGalleryState extends State<BreedFullscreenGallery> {
           icon: const Icon(Icons.close_rounded),
         ),
         title: Text(
-          strings.photoPosition(_currentIndex + 1, widget.imageUrls.length),
+          strings.photoPosition(_currentIndex + 1, widget.photos.length),
         ),
       ),
       body: Stack(
         children: [
           PageView.builder(
             controller: _pageController,
-            itemCount: widget.imageUrls.length,
+            itemCount: widget.photos.length,
             onPageChanged: (index) => setState(() => _currentIndex = index),
             itemBuilder: (context, index) => InteractiveViewer(
               minScale: 1,
               maxScale: 4,
               child: Center(
                 child: AppRemoteImage(
-                  url: widget.imageUrls[index],
+                  url: widget.photos[index].url,
                   label: widget.label,
                   fit: BoxFit.contain,
                 ),
@@ -86,7 +91,7 @@ class _BreedFullscreenGalleryState extends State<BreedFullscreenGallery> {
                 icon: const Icon(Icons.chevron_left_rounded),
               ),
             ),
-          if (_currentIndex + 1 < widget.imageUrls.length)
+          if (_currentIndex + 1 < widget.photos.length)
             Align(
               alignment: Alignment.centerRight,
               child: IconButton.filledTonal(
