@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:the_cats_app/app/app_theme.dart';
 import 'package:the_cats_app/domain/entities/breed_photo.dart';
 import 'package:the_cats_app/domain/policies/breed_gallery.dart';
 import 'package:the_cats_app/l10n/generated/app_localizations.dart';
@@ -15,6 +16,7 @@ const _photos = <GalleryPhoto>[
 void _retryPhotos() {}
 
 Widget _frame(Widget child) => MaterialApp(
+  theme: AppTheme.light,
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: Scaffold(body: SizedBox(width: 400, height: 400, child: child)),
@@ -100,6 +102,34 @@ void main() {
 
     expect(tester.widget<IconButton>(previous).onPressed, isNotNull);
     expect(tester.widget<IconButton>(next).onPressed, isNull);
+  });
+
+  testWidgets('uses terracotta pager controls on compact layouts', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _frame(
+        BreedGallery(
+          photos: _photos,
+          photoRequest: const AsyncData(<BreedPhoto>[]),
+          onRetry: _retryPhotos,
+        ),
+      ),
+    );
+
+    final next = tester.widget<IconButton>(
+      find.ancestor(
+        of: find.byTooltip('Next photo'),
+        matching: find.byType(IconButton),
+      ),
+    );
+    final style = next.style!;
+
+    expect(
+      style.foregroundColor?.resolve(<WidgetState>{}),
+      AppTheme.light.colorScheme.onPrimary,
+    );
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('explains a breed without photos instead of an empty box', (

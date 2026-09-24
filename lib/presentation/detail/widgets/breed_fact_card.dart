@@ -44,8 +44,7 @@ class BreedFactCard extends StatelessWidget {
               Flexible(
                 child: Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
@@ -56,9 +55,7 @@ class BreedFactCard extends StatelessWidget {
           SizedBox(height: responsive.spacing(6)),
           Text(
             value,
-            maxLines: 2,
             textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),

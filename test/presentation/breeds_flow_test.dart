@@ -291,7 +291,7 @@ void main() {
     expect(find.text('United States'), findsOneWidget);
     // Spanish reads kilograms, and the weight card is the only weight on screen.
     expect(find.text('4 - 7 kg'), findsOneWidget);
-    expect(find.byTooltip('Volver a las razas'), findsOneWidget);
+    expect(find.text('Volver a las razas'), findsOneWidget);
   });
 
   testWidgets('returning from detail restores the catalog without refetching', (
@@ -338,6 +338,45 @@ void main() {
     expect(find.byType(EditableText), findsOneWidget);
     expect(find.text('Abyssinian'), findsOneWidget);
     expect(find.text('Bengal'), findsOneWidget);
+  });
+
+  testWidgets('detail uses a labeled back action on desktop', (tester) async {
+    final view = tester.view;
+    final originalPhysicalSize = view.physicalSize;
+    final originalDevicePixelRatio = view.devicePixelRatio;
+    addTearDown(() {
+      view.physicalSize = originalPhysicalSize;
+      view.devicePixelRatio = originalDevicePixelRatio;
+    });
+    view.physicalSize = const Size(1440, 900);
+    view.devicePixelRatio = 1;
+    await pumpApp(
+      tester,
+      repository: _FakeBreedsRepository(),
+      location: '/breeds/beng',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('detail-back')), findsOneWidget);
+    expect(find.text('Back to breeds'), findsOneWidget);
+    expect(find.text('Language'), findsOneWidget);
+    expect(find.byType(AppBar), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(BreedGallery),
+        matching: find.byKey(const Key('detail-back')),
+      ),
+      findsNothing,
+    );
+
+    view.physicalSize = const Size(390, 844);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('detail-back')), findsOneWidget);
+    expect(find.text('Back to breeds'), findsNothing);
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.widgetWithText(AppBar, 'Bengal'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('detail reports an unavailable breed ID', (tester) async {
@@ -404,12 +443,17 @@ void main() {
     }
   });
 
-  testWidgets('a related breed opens its own detail', (tester) async {
+  testWidgets('a related breed replaces detail without stacking navigation', (
+    tester,
+  ) async {
     await pumpApp(
       tester,
       repository: _ManyBreedsRepository(),
-      location: '/breeds/breed-0',
+      location: '/breeds',
     );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Breed 1'));
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(
@@ -426,6 +470,12 @@ void main() {
     expect(find.text('Breed 2'), findsOneWidget);
     expect(find.text('BREED-1'), findsOneWidget);
     expect(find.text('BREED-0'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('detail-back')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(EditableText), findsOneWidget);
+    expect(find.text('Breed 1'), findsOneWidget);
   });
 
   testWidgets('the remaining breeds action opens the catalog', (tester) async {

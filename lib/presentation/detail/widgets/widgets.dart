@@ -11,6 +11,7 @@ export 'breed_fact_card.dart';
 export 'breed_fullscreen_gallery.dart';
 export 'breed_gallery.dart';
 export 'breed_information.dart';
+export 'detail_navigation_bar.dart';
 export 'external_link_panel.dart';
 export 'related_breeds_section.dart';
 export 'section_panel.dart';

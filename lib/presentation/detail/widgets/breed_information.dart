@@ -9,9 +9,17 @@ import 'breed_fact_card.dart';
 import 'section_panel.dart';
 
 class BreedInformation extends StatelessWidget {
-  const BreedInformation({super.key, required this.breed});
+  const BreedInformation({
+    super.key,
+    required this.breed,
+    this.showName = true,
+  });
 
   final Breed breed;
+
+  /// The compact detail app bar already shows this name, so its content avoids
+  /// repeating the same heading below the photo.
+  final bool showName;
 
   @override
   Widget build(BuildContext context) {
@@ -66,16 +74,18 @@ class BreedInformation extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          breed.name,
-          style: theme.textTheme.headlineLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+        if (showName) ...[
+          Text(
+            breed.name,
+            style: theme.textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        SizedBox(height: responsive.spacing(20)),
-        Divider(height: 1, color: theme.colorScheme.outlineVariant),
+          SizedBox(height: responsive.spacing(20)),
+          Divider(height: 1, color: theme.colorScheme.outlineVariant),
+        ],
         if (facts.isNotEmpty) ...[
-          SizedBox(height: responsive.spacing(24)),
+          SizedBox(height: responsive.spacing(showName ? 24 : 0)),
           SectionTitle(strings.overview),
           SizedBox(height: responsive.spacing(12)),
           _FactGrid(cards: facts),
@@ -141,13 +151,14 @@ List<String> _split(String? value) => value == null
           if (part.trim().isNotEmpty) part.trim(),
       ];
 
-/// Lays the overview cards out three per row, wrapping any remaining card.
+/// Lays overview cards out with enough width for their localized labels.
 class _FactGrid extends StatelessWidget {
   const _FactGrid({required this.cards});
 
   final List<Widget> cards;
 
   static const int columns = 3;
+  static const double _minimumCardWidth = 180;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +166,11 @@ class _FactGrid extends StatelessWidget {
     final gap = responsive.spacing(8);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
+        final canShowThreeColumns =
+            constraints.maxWidth >= _minimumCardWidth * columns + gap * 2;
+        final columnCount = canShowThreeColumns ? columns : 2;
+        final width =
+            (constraints.maxWidth - gap * (columnCount - 1)) / columnCount;
         return Wrap(
           spacing: gap,
           runSpacing: gap,

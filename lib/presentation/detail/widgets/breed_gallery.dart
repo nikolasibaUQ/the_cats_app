@@ -92,6 +92,7 @@ class _BreedGalleryState extends State<BreedGallery> {
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context)!;
     final responsive = Responsive.of(context);
+    final colors = Theme.of(context).colorScheme;
     final isLoadingPhotos =
         widget.photoRequest.isLoading && !widget.photoRequest.hasError;
     return Stack(
@@ -134,7 +135,7 @@ class _BreedGalleryState extends State<BreedGallery> {
                 if (widget.photos.length > 1) ...[
                   DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.62),
+                      color: colors.onSurface.withValues(alpha: 0.78),
                       borderRadius: BorderRadius.circular(
                         responsive.radius(12),
                       ),
@@ -149,9 +150,9 @@ class _BreedGalleryState extends State<BreedGallery> {
                           _currentIndex + 1,
                           widget.photos.length,
                         ),
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelLarge?.copyWith(color: Colors.white),
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: colors.surfaceContainer,
+                        ),
                       ),
                     ),
                   ),
@@ -170,26 +171,24 @@ class _BreedGalleryState extends State<BreedGallery> {
         if (widget.photos.length > 1) ...[
           Align(
             alignment: Alignment.centerLeft,
-            child: OverlayCircleSurface(
-              child: IconButton(
-                tooltip: strings.previousPhoto,
-                onPressed: _currentIndex == 0
-                    ? null
-                    : () => _showPage(_currentIndex - 1),
-                icon: const Icon(Icons.chevron_left_rounded),
-              ),
+            child: _GalleryPagerButton(
+              tooltip: strings.previousPhoto,
+              onPressed: _currentIndex == 0
+                  ? null
+                  : () => _showPage(_currentIndex - 1),
+              icon: const Icon(Icons.chevron_left_rounded),
+              useAccentSurface: !responsive.isDesktop,
             ),
           ),
           Align(
             alignment: Alignment.centerRight,
-            child: OverlayCircleSurface(
-              child: IconButton(
-                tooltip: strings.nextPhoto,
-                onPressed: _currentIndex + 1 == widget.photos.length
-                    ? null
-                    : () => _showPage(_currentIndex + 1),
-                icon: const Icon(Icons.chevron_right_rounded),
-              ),
+            child: _GalleryPagerButton(
+              tooltip: strings.nextPhoto,
+              onPressed: _currentIndex + 1 == widget.photos.length
+                  ? null
+                  : () => _showPage(_currentIndex + 1),
+              icon: const Icon(Icons.chevron_right_rounded),
+              useAccentSurface: !responsive.isDesktop,
             ),
           ),
         ],
@@ -217,6 +216,49 @@ class _BreedGalleryState extends State<BreedGallery> {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Keeps photo paging legible without making it resemble a screen action on
+/// compact layouts. The terracotta treatment retains the app's visual
+/// direction; wide layouts retain the light overlay treatment.
+class _GalleryPagerButton extends StatelessWidget {
+  const _GalleryPagerButton({
+    required this.tooltip,
+    required this.onPressed,
+    required this.icon,
+    required this.useAccentSurface,
+  });
+
+  final String tooltip;
+  final VoidCallback? onPressed;
+  final Widget icon;
+  final bool useAccentSurface;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final button = IconButton(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      icon: icon,
+      style: useAccentSurface
+          ? IconButton.styleFrom(
+              foregroundColor: colors.onPrimary,
+              disabledForegroundColor: colors.onSurfaceVariant,
+            )
+          : null,
+    );
+    if (!useAccentSurface) return OverlayCircleSurface(child: button);
+
+    return Material(
+      color: onPressed == null
+          ? colors.surfaceContainerHighest.withValues(alpha: 0.94)
+          : colors.primary.withValues(alpha: 0.92),
+      shape: const CircleBorder(),
+      clipBehavior: Clip.antiAlias,
+      child: button,
     );
   }
 }

@@ -35,6 +35,7 @@ class BreedsScreen extends ConsumerWidget {
           strings.appTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
         actions: [
           LanguageMenu(selected: selectedLanguage, onSelected: selectLanguage),
         ],

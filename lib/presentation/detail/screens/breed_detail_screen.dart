@@ -42,10 +42,12 @@ class BreedDetailScreen extends ConsumerWidget {
         .read(appLocaleControllerProvider.notifier)
         .select;
     final strings = AppLocalizations.of(context)!;
+    // Compact detail keeps screen-level actions out of the photo, where they
+    // otherwise compete with the gallery pager controls.
+    final useDetailAppBar =
+        breed.value == null || MediaQuery.sizeOf(context).width < 760;
     return Scaffold(
-      // The photo area carries its own controls once the breed is known. The
-      // states without a photo keep a bar so they still offer a way back.
-      appBar: breed.value == null
+      appBar: useDetailAppBar
           ? AppBar(
               leading: IconButton(
                 key: const Key('detail-back'),
@@ -53,7 +55,8 @@ class BreedDetailScreen extends ConsumerWidget {
                 onPressed: () => _leaveDetail(context),
                 icon: const Icon(Icons.arrow_back_rounded),
               ),
-              title: Text(strings.appTitle),
+              title: Text(breed.value?.name ?? strings.appTitle),
+              centerTitle: true,
               actions: [
                 LanguageMenu(
                   selected: selectedLanguage,
@@ -126,7 +129,7 @@ class _BreedDetailBody extends ConsumerWidget {
         ref.invalidate(breedPhotosProvider(breed.id));
       },
       onBreedSelected: (selected) =>
-          context.push(AppRoutes.breedDetailPath(selected.id)),
+          context.replace(AppRoutes.breedDetailPath(selected.id)),
       onShowAllBreeds: () => context.go(AppRoutes.breeds),
       onBack: () => _leaveDetail(context),
       selectedLanguage: selectedLanguage,

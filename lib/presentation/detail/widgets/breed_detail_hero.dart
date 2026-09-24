@@ -3,12 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../app/app_locale_controller.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/policies/breed_gallery.dart';
-import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
-import '../../../shared/widgets/widgets.dart';
 import '../../photo_framing.dart';
 import 'breed_gallery.dart';
 
@@ -17,9 +14,8 @@ import 'breed_gallery.dart';
 /// The area takes the shape of the photo the gallery is showing, bounded by the
 /// space the layout offers, so a landscape photo is not zoomed into a narrow
 /// column and a portrait one is not cropped into a wide band. The gallery fills
-/// the area and the controls that belong to the screen float above it: leaving
-/// the detail, the language selector, and the breed code. The photo area never
-/// scrolls; only the information beside or below it does.
+/// the area and the controls that belong to the photo float above it. The photo
+/// area never scrolls; only the information beside or below it does.
 class BreedDetailHero extends StatefulWidget {
   const BreedDetailHero({
     super.key,
@@ -27,9 +23,6 @@ class BreedDetailHero extends StatefulWidget {
     required this.photos,
     required this.photoRequest,
     required this.onRetryGallery,
-    required this.onBack,
-    required this.selectedLanguage,
-    required this.onLanguageSelected,
     required this.borderRadius,
   });
 
@@ -37,9 +30,6 @@ class BreedDetailHero extends StatefulWidget {
   final List<GalleryPhoto> photos;
   final AsyncValue<List<BreedPhoto>> photoRequest;
   final VoidCallback onRetryGallery;
-  final VoidCallback onBack;
-  final AppLanguage selectedLanguage;
-  final ValueChanged<AppLanguage> onLanguageSelected;
 
   /// Rounded edges of the photo area. Detail that fills the top of a narrow
   /// screen rounds its bottom corners only.
@@ -76,8 +66,8 @@ class _BreedDetailHeroState extends State<BreedDetailHero> {
 
   @override
   Widget build(BuildContext context) {
-    final strings = AppLocalizations.of(context)!;
     final responsive = Responsive.of(context);
+    final colors = Theme.of(context).colorScheme;
     final photoAspect = framedPhotoAspect(_photo);
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -108,34 +98,12 @@ class _BreedDetailHeroState extends State<BreedDetailHero> {
                   onPhotoChanged: _onPhotoChanged,
                 ),
                 Positioned(
-                  top: responsive.spacing(12),
-                  left: responsive.spacing(12),
-                  child: OverlayCircleSurface(
-                    key: const Key('detail-back'),
-                    child: IconButton(
-                      tooltip: strings.backToBreeds,
-                      onPressed: widget.onBack,
-                      icon: const Icon(Icons.arrow_back_rounded),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: responsive.spacing(12),
-                  right: responsive.spacing(12),
-                  child: OverlayCircleSurface(
-                    child: LanguageMenu(
-                      selected: widget.selectedLanguage,
-                      onSelected: widget.onLanguageSelected,
-                    ),
-                  ),
-                ),
-                Positioned(
                   right: responsive.spacing(12),
                   bottom: responsive.spacing(12),
                   child: _HeroLabel(
                     label: widget.breed.id.toUpperCase(),
-                    background: Colors.black.withValues(alpha: 0.62),
-                    foreground: Colors.white,
+                    background: colors.primary.withValues(alpha: 0.88),
+                    foreground: colors.onPrimary,
                   ),
                 ),
               ],

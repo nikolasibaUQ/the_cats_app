@@ -168,7 +168,7 @@ Navigation uses the route stack: the catalog pushes detail, so returning pops
 back to a catalog that kept its scroll position, search text, and state. A
 direct visit or a browser refresh has no previous route, so the back action
 falls back to the catalog location. Opening a different breed from the
-suggestions pushes another detail instead of replacing the current one.
+suggestions replaces the active detail instead of stacking another detail.
 
 Search debounce and progressive disclosure are presentation behavior. They do
 not justify a use case because neither changes business rules nor coordinates

@@ -7,6 +7,17 @@ approved visual references when they exist. Keep layouts readable on Flutter
 Web and common mobile widths; use a sensible maximum content width on large
 screens. Avoid visual noise, excessive gradients, shadows, and animation.
 
+The visual tokens are deliberate: soft terracotta (`#D9A08A`) marks selected and
+primary actions; cream (`#FAF8F5`) is the scaffold; white (`#FFFFFF`) raises
+cards; charcoal (`#252525`) and warm gray (`#6F6B67`) carry text; and pale
+cream (`#F3EDE5`) supports neutral states. Do not introduce literal black,
+white, or seed-derived accent colors where an equivalent `ColorScheme` token
+exists.
+
+The catalog and compact-detail AppBars use terracotta with charcoal foreground
+content, giving navigation a stable brand accent. Content remains cream and
+white, while a focused search field uses the same terracotta outline.
+
 The interface supports Spanish and English. It follows the device language by
 default and offers an in-app selector for either language or the system setting.
 All UI copy, including error states and accessibility labels, belongs in ARB
@@ -81,12 +92,21 @@ they stay visible and disable at the corresponding end of the gallery. Tapping
 a photo or the expand control opens a full-screen viewer. A gallery error offers
 its own retry and must not replace otherwise usable breed information.
 
+On compact layouts, an AppBar carries the back action and language selector;
+the photo holds only gallery controls and the breed code. Its pager controls
+use terracotta surfaces with charcoal icons; disabled controls use the pale cream
+neutral. On desktop, a contextual toolbar above the two-column layout holds
+the labeled back action on the left and the labeled language selector on the
+right. Screen controls never float above the photo, leaving it for gallery
+controls and the breed code only.
+
 The area frames each photo with its own proportion, bounded between 3:4 and 3:2
 and by the space the layout offers, so a landscape photo is not zoomed into a
 narrow column and a portrait one is not cropped into a wide band. The change of
 shape between photos is a smooth resize, not a jump.
 
-The information column follows the approved order:
+The information column follows the approved order. On compact layouts, the
+breed name moves to the AppBar and is not repeated below the photo:
 
 - breed name;
 - overview cards for origin, breed group, life span, weight, and height;
@@ -103,6 +123,10 @@ photo area does not carry an origin label. The header's weight chip, the
 origin-and-life-span summary line, and the closing "back to all breeds" button
 were removed for the same reason: the photo controls already leave the detail,
 and the suggestions row already offers the catalog.
+
+Overview cards use three columns only when each card remains at least 180 px
+wide; otherwise they use two columns. Labels and values wrap rather than being
+truncated, so Spanish copy and API values remain readable.
 
 Weight and height follow the reading system of the active language. Omit a
 section whose values the API does not supply instead of showing an empty one.
@@ -123,8 +147,9 @@ Follow [API field guidance](api.md).
   forward work with route history.
 - A direct detail visit or a browser refresh has no previous route, so the in-app
   back action opens the catalog instead of failing.
-- The suggestions on detail push another detail, so a breed can be explored
-  without losing the previous one.
+- Selecting a suggested breed replaces the active detail in place. The URL
+  updates for refreshes and sharing, but it does not add another detail to the
+  navigation stack; returning goes back to the catalog.
 - The counter for the remaining breeds opens the full catalog, unfiltered.
 - On desktop, the suggestions row has previous/next buttons; touch users can
   still scroll it directly.
