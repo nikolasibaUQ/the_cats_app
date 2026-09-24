@@ -68,6 +68,9 @@ Run the Web build after changes to routing, image handling, assets, or
 configuration. Deployment-specific behavior is documented in
 [deployment.md](deployment.md).
 
+GitHub Actions runs the everyday checks, coverage, and a release Web build on
+every push to `main`, and also produces a debug APK. See [ci.md](ci.md).
+
 ## Test organisation
 
 `test/` mirrors the production layers where that improves discoverability:

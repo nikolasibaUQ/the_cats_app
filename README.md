@@ -74,6 +74,7 @@ Run code generation again after changing Riverpod annotations or JSON models.
 | 🎨 [Design](docs/design.md) | Navigation, responsive behavior, localization, image states, and accessibility |
 | 🛠️ [Development](docs/development.md) | Setup, generation, quality checks, and test strategy |
 | 🌐 [Deployment](docs/deployment.md) | Flutter Web, Docker/Nginx, cache behavior, and hosting considerations |
+| ⚙️ [CI](docs/ci.md) | GitHub Actions workflow, quality gates, and downloadable artifacts |
 | 🤖 [Agent guidance](AGENTS.md) | Shared rules for human and AI-assisted development |
 
 ## 🔎 Scope notes

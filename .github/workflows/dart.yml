@@ -1,0 +1,99 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # This project is Flutter, so use the Flutter SDK instead of the
+      # standalone Dart SDK. Pin the toolchain version used by the Docker
+      # build and local development.
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.35.6'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Generated files (*.g.dart, lib/l10n/generated/) are gitignored and
+      # not committed, so they must be regenerated before any other step
+      # can analyze, test, or build the project.
+      - name: Generate localization and Riverpod/JSON code
+        run: |
+          flutter gen-l10n
+          dart run build_runner build --delete-conflicting-outputs
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      # '--fatal-infos' makes the analysis slightly stricter.
+      - name: Analyze project source
+        run: flutter analyze --fatal-infos
+
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/lcov.info
+
+      # Validates the same production artifact the Docker image builds.
+      # The demo key in .env.example is public and safe for CI.
+      - name: Build web (release)
+        run: flutter build web --release --dart-define-from-file=.env.example
+
+      - name: Upload web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+
+  android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.35.6'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate localization and Riverpod/JSON code
+        run: |
+          flutter gen-l10n
+          dart run build_runner build --delete-conflicting-outputs
+
+      # Debug APKs are signed automatically, so they can be built and
+      # installed without any keystore configuration.
+      - name: Build debug APK
+        run: flutter build apk --debug --dart-define-from-file=.env.example
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: the-cats-app-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
