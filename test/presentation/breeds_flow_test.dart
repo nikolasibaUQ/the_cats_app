@@ -108,12 +108,7 @@ class _RetryingBreedsRepository implements BreedsRepository {
     if (requests == 1) {
       throw Exception('Temporary API failure');
     }
-    return [
-      Breed(
-        id: 'breed-$requests',
-        name: requests == 2 ? 'Abyssinian' : 'Bengal',
-      ),
-    ];
+    return const [Breed(id: 'abys', name: 'Abyssinian')];
   }
 
   @override
@@ -246,7 +241,7 @@ void main() {
     expect(find.byType(EditableText), findsOneWidget);
   });
 
-  testWidgets('catalog retries an error and refreshes loaded breeds', (
+  testWidgets('catalog retries an error and shows loaded breeds', (
     tester,
   ) async {
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -263,11 +258,7 @@ void main() {
 
     expect(find.text('Abyssinian'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Refresh breeds'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Bengal'), findsOneWidget);
-    expect(repository.requests, 3);
+    expect(repository.requests, 2);
   });
 
   testWidgets('search filters breeds and a card opens detail', (tester) async {

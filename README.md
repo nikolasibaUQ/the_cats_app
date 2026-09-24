@@ -23,13 +23,13 @@
 </p>
 
 > [!TIP]
-> **No installation needed:** [open the deployed app now →](https://thecatsapp.kobrax.dev)
+> **No installation needed:** [open the deployed app now →](https://thecats.kobrax.dev)
 
 ## ✨ Highlights
 
 - 🌎 Spanish and English interface, with system-language and measurement defaults.
-- 🔎 Breed catalogue with debounced local search, progressive reveal, refresh,
-  and recoverable error states.
+- 🔎 Breed catalogue with debounced local search, progressive reveal, and
+  recoverable error states.
 - 🖼️ Detail route, gallery, responsive layouts, and intentional
   missing/loading-image states.
 - 🧱 Layered structure with Riverpod, Dio, GoRouter, DTO-to-entity mapping,

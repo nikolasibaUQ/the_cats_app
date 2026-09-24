@@ -82,21 +82,25 @@ class _BreedFullscreenGalleryState extends State<BreedFullscreenGallery> {
               ),
             ),
           ),
-          if (_currentIndex > 0)
+          if (widget.photos.length > 1)
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton.filledTonal(
                 tooltip: strings.previousPhoto,
-                onPressed: () => _showPage(_currentIndex - 1),
+                onPressed: _currentIndex == 0
+                    ? null
+                    : () => _showPage(_currentIndex - 1),
                 icon: const Icon(Icons.chevron_left_rounded),
               ),
             ),
-          if (_currentIndex + 1 < widget.photos.length)
+          if (widget.photos.length > 1)
             Align(
               alignment: Alignment.centerRight,
               child: IconButton.filledTonal(
                 tooltip: strings.nextPhoto,
-                onPressed: () => _showPage(_currentIndex + 1),
+                onPressed: _currentIndex + 1 == widget.photos.length
+                    ? null
+                    : () => _showPage(_currentIndex + 1),
                 icon: const Icon(Icons.chevron_right_rounded),
               ),
             ),

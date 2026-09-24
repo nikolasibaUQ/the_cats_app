@@ -70,6 +70,38 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('keeps directional buttons visible at both ends of the gallery', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _frame(
+        BreedGallery(
+          photos: _photos,
+          photoRequest: const AsyncData(<BreedPhoto>[]),
+          onRetry: _retryPhotos,
+        ),
+      ),
+    );
+
+    final previous = find.ancestor(
+      of: find.byTooltip('Previous photo'),
+      matching: find.byType(IconButton),
+    );
+    final next = find.ancestor(
+      of: find.byTooltip('Next photo'),
+      matching: find.byType(IconButton),
+    );
+
+    expect(tester.widget<IconButton>(previous).onPressed, isNull);
+    expect(tester.widget<IconButton>(next).onPressed, isNotNull);
+
+    await tester.tap(next);
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<IconButton>(previous).onPressed, isNotNull);
+    expect(tester.widget<IconButton>(next).onPressed, isNull);
+  });
+
   testWidgets('explains a breed without photos instead of an empty box', (
     tester,
   ) async {

@@ -2,7 +2,6 @@
   "@@locale": "es",
   "appTitle": "The Cats",
   "openingApp": "Abriendo The Cats",
-  "refreshBreeds": "Actualizar razas",
   "meetBreeds": "Conoce las razas",
   "intro": "Encuentra un amigo felino y descubre qué lo hace único.",
   "searchHint": "Raza u origen",
@@ -99,6 +98,8 @@
     }
   },
   "relatedBreeds": "Explora otras razas",
+  "previousRelatedBreeds": "Razas sugeridas anteriores",
+  "nextRelatedBreeds": "Siguientes razas sugeridas",
   "moreBreeds": "{count} más",
   "@moreBreeds": {
     "placeholders": {

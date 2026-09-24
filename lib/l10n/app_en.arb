@@ -2,7 +2,6 @@
   "@@locale": "en",
   "appTitle": "The Cats",
   "openingApp": "Opening The Cats",
-  "refreshBreeds": "Refresh breeds",
   "meetBreeds": "Meet the breeds",
   "intro": "Find a feline friend and discover what makes them unique.",
   "searchHint": "Name or origin",
@@ -99,6 +98,8 @@
     }
   },
   "relatedBreeds": "Explore other breeds",
+  "previousRelatedBreeds": "Previous breed suggestions",
+  "nextRelatedBreeds": "Next breed suggestions",
   "moreBreeds": "{count} more",
   "@moreBreeds": {
     "placeholders": {

@@ -39,8 +39,7 @@ resolution without overflowing short screens.
 ## Breeds
 
 Show the breeds returned by the API. Provide distinct loading, data, API-empty,
-and error states. A recoverable error offers retry. A refresh control, if shown
-in the approved design, must actually refresh data. Provider state should
+and error states. A recoverable error offers retry. Provider state should
 prevent new requests caused solely by widget rebuilds.
 
 Full-screen loading and unavailable states use the matching bundled artwork.
@@ -77,9 +76,10 @@ states as appropriate.
 The photo area stays fixed while the information scrolls independently: above
 the text on narrow layouts and beside it on wide layouts. Its controls float on
 the photo — leaving the detail, the language selector, and the breed code — so
-the photo itself stays unobstructed. Swiping changes photos, and tapping a photo
-or the expand control opens a full-screen viewer. A gallery error offers its own
-retry and must not replace otherwise usable breed information.
+the photo itself stays unobstructed. Previous and next buttons change photos;
+they stay visible and disable at the corresponding end of the gallery. Tapping
+a photo or the expand control opens a full-screen viewer. A gallery error offers
+its own retry and must not replace otherwise usable breed information.
 
 The area frames each photo with its own proportion, bounded between 3:4 and 3:2
 and by the space the layout offers, so a landscape photo is not zoomed into a
@@ -93,7 +93,8 @@ The information column follows the approved order:
 - description;
 - history;
 - temperament words as outlined pills;
-- suggested breeds, with a counter for those left out;
+- suggested breeds, with a counter for those left out and desktop previous/next
+  controls;
 - the Wikipedia article.
 
 Every fact is rendered once. The overview cards are the only place that shows
@@ -125,6 +126,8 @@ Follow [API field guidance](api.md).
 - The suggestions on detail push another detail, so a breed can be explored
   without losing the previous one.
 - The counter for the remaining breeds opens the full catalog, unfiltered.
+- On desktop, the suggestions row has previous/next buttons; touch users can
+  still scroll it directly.
 - Web hosting must serve the Flutter entry point for application routes so a
   direct visit or refresh does not return an Nginx 404.
 

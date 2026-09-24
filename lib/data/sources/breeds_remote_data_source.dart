@@ -22,7 +22,7 @@ class DioBreedsRemoteDataSource implements BreedsRemoteDataSource {
   @override
   Future<List<BreedPhotoDto>> getBreedPhotos(
     String breedId, {
-    int limit = 10,
+    int limit = 8,
   }) async {
     final normalizedId = breedId.trim();
     if (normalizedId.isEmpty) {

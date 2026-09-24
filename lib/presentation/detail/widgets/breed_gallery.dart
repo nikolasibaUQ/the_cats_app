@@ -167,28 +167,32 @@ class _BreedGalleryState extends State<BreedGallery> {
               ],
             ),
           ),
-        if (_currentIndex > 0)
+        if (widget.photos.length > 1) ...[
           Align(
             alignment: Alignment.centerLeft,
             child: OverlayCircleSurface(
               child: IconButton(
                 tooltip: strings.previousPhoto,
-                onPressed: () => _showPage(_currentIndex - 1),
+                onPressed: _currentIndex == 0
+                    ? null
+                    : () => _showPage(_currentIndex - 1),
                 icon: const Icon(Icons.chevron_left_rounded),
               ),
             ),
           ),
-        if (_currentIndex + 1 < widget.photos.length)
           Align(
             alignment: Alignment.centerRight,
             child: OverlayCircleSurface(
               child: IconButton(
                 tooltip: strings.nextPhoto,
-                onPressed: () => _showPage(_currentIndex + 1),
+                onPressed: _currentIndex + 1 == widget.photos.length
+                    ? null
+                    : () => _showPage(_currentIndex + 1),
                 icon: const Icon(Icons.chevron_right_rounded),
               ),
             ),
           ),
+        ],
         if (widget.photos.isNotEmpty && isLoadingPhotos)
           const Align(
             alignment: Alignment.bottomCenter,

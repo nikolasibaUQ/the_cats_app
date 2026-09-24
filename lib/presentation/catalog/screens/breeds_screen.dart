@@ -37,11 +37,6 @@ class BreedsScreen extends ConsumerWidget {
         ),
         actions: [
           LanguageMenu(selected: selectedLanguage, onSelected: selectLanguage),
-          IconButton(
-            tooltip: strings.refreshBreeds,
-            onPressed: () => ref.invalidate(breedsProvider),
-            icon: const Icon(Icons.refresh_rounded),
-          ),
         ],
       ),
       body: SafeArea(
