@@ -1,0 +1,169 @@
+# Design and product behavior
+
+## Objective
+
+The app lets users explore cat breeds in a clean, calm, warm interface. Follow
+approved visual references when they exist. Keep layouts readable on Flutter
+Web and common mobile widths; use a sensible maximum content width on large
+screens. Avoid visual noise, excessive gradients, shadows, and animation.
+
+The interface supports Spanish and English. It follows the device language by
+default and offers an in-app selector for either language or the system setting.
+All UI copy, including error states and accessibility labels, belongs in ARB
+files. The API supplies breed content in its own language; do not imply that
+the application translates that content.
+
+## Main flow
+
+```text
+Splash → Breeds → Breed Detail
+```
+
+All controls that look interactive must work. Reuse the central theme and
+extract widgets when doing so improves clarity or real reuse.
+
+## Splash
+
+The splash briefly introduces the app for 2.2 seconds on entry and then goes
+to `/breeds`.
+It must not become an extra browser-history stop during normal navigation.
+A direct `/breeds/:id` visit opens detail through its loading state without
+first showing splash. Its fixed duration is a visual transition only: it never
+waits for, starts, or blocks an API request.
+
+The splash artwork is the bundled `assets/images/splash_image.png`, a square
+illustration that grows with the viewport up to a comfortable size and gives
+up room before the title and subtitle do, so it stays proportional on any
+resolution without overflowing short screens.
+
+## Breeds
+
+Show the breeds returned by the API. Provide distinct loading, data, API-empty,
+and error states. A recoverable error offers retry. A refresh control, if shown
+in the approved design, must actually refresh data. Provider state should
+prevent new requests caused solely by widget rebuilds.
+
+Full-screen loading and unavailable states use the matching bundled artwork.
+Select the 3:4 or 4:3 variant from the available layout constraints. The bitmap
+contains no copy: render the translated message through Flutter and expose the
+same localized meaning as its semantic label.
+
+Search filters the loaded list by breed name or API-provided origin, ignoring
+case and surrounding spaces. One-character input keeps the unfiltered list and
+shows a short hint. Queries with at least two characters apply after a 350 ms
+debounce so the grid does not rebuild for every keystroke. Clearing the field
+restores the list immediately. A query with no matches has its own empty state,
+distinct from an empty API response. Selecting a card opens `/breeds/:id`.
+
+The API list is loaded once, but the screen initially renders eight matching
+breeds and reveals eight more through an explicit action. This limits the
+initial scroll without hiding matches from local search or generating another
+network request.
+
+Each card shows the breed name and its country of origin, as the approved
+design shows. The same card is reused for the suggestions on detail, where
+only the identifying information belongs.
+
+The heading and search field remain fixed while the result area scrolls. This
+keeps the active query visible and avoids making the user scroll to the top to
+change it.
+
+## Breed detail
+
+Use the route ID to resolve the breed from the list, including after a browser
+refresh or direct visit. Show loading, error with retry, and unavailable-ID
+states as appropriate.
+
+The photo area stays fixed while the information scrolls independently: above
+the text on narrow layouts and beside it on wide layouts. Its controls float on
+the photo — leaving the detail, the language selector, and the breed code — so
+the photo itself stays unobstructed. Swiping changes photos, and tapping a photo
+or the expand control opens a full-screen viewer. A gallery error offers its own
+retry and must not replace otherwise usable breed information.
+
+The area frames each photo with its own proportion, bounded between 3:4 and 3:2
+and by the space the layout offers, so a landscape photo is not zoomed into a
+narrow column and a portrait one is not cropped into a wide band. The change of
+shape between photos is a smooth resize, not a jump.
+
+The information column follows the approved order:
+
+- breed name;
+- overview cards for origin, breed group, life span, weight, and height;
+- description;
+- history;
+- temperament words as outlined pills;
+- suggested breeds, with a counter for those left out;
+- the Wikipedia article.
+
+Every fact is rendered once. The overview cards are the only place that shows
+origin, life span, weight, and height: the header does not repeat them and the
+photo area does not carry an origin label. The header's weight chip, the
+origin-and-life-span summary line, and the closing "back to all breeds" button
+were removed for the same reason: the photo controls already leave the detail,
+and the suggestions row already offers the catalog.
+
+Weight and height follow the reading system of the active language. Omit a
+section whose values the API does not supply instead of showing an empty one.
+Ratings, alternative names, and article links are not part of the detail at
+all: the free-plan response never supplies them, so the models and the UI
+carry no code for them. The article action always opens the Wikipedia search
+for the breed name.
+
+Follow [API field guidance](api.md).
+
+## Navigation and Web hosting
+
+- `/` presents splash on normal entry, then replaces it with `/breeds`.
+- `/breeds` presents the list.
+- `/breeds/:id` presents detail; unknown IDs show an unavailable state.
+- Opening detail pushes it on top of the catalog, so returning restores the
+  catalog with its scroll position, search text, and state. Browser back and
+  forward work with route history.
+- A direct detail visit or a browser refresh has no previous route, so the in-app
+  back action opens the catalog instead of failing.
+- The suggestions on detail push another detail, so a breed can be explored
+  without losing the previous one.
+- The counter for the remaining breeds opens the full catalog, unfiltered.
+- Web hosting must serve the Flutter entry point for application routes so a
+  direct visit or refresh does not return an Nginx 404.
+
+## Images, errors, and responsiveness
+
+Remote images need loading, missing-URL, and failed-request fallbacks. Photos
+come in many proportions (the live breed list spans 0.63 to 1.93), so a photo
+frames itself with its own shape inside a calm band instead of being scaled to
+fill a fixed rectangle: measured on the live data, the fixed desktop rectangle
+hid 42% of a photo on average and the photo-shaped frame keeps about 97% of it.
+Catalog cards keep one uniform frame so the grid stays aligned. Do not leave an
+otherwise usable page blank while one image loads or fails.
+
+The Cat API serves its photos from `cdn2.thecatapi.com`, which does not send
+`Access-Control-Allow-Origin`. Flutter Web reads image bytes with XHR, so the
+browser blocks that request, logs one CORS error per photo, and only then falls
+back to an HTML element. Measured in Chromium, `WebHtmlElementStrategy.fallback`
+produced six blocked requests on the first catalog screen. `AppRemoteImage`
+therefore sets `webHtmlElementStrategy: WebHtmlElementStrategy.prefer`: the
+`<img>` element is used directly, the browser caches it, and no blocked request
+is issued. The option is ignored on mobile and desktop, where bytes are always
+fetched and `loadingBuilder` still applies.
+
+`AppRemoteImage` replaces its loading artwork with the photo as soon as the
+image is ready; a failed request or a missing URL replaces the frame with the
+unavailable artwork. The artwork is never retained behind a successfully
+loaded contained photo. Both states select their portrait or landscape variant
+from the frame constraints and keep localized copy in Flutter. Because every
+card, detail gallery, and full-screen viewer uses this widget, the states remain
+consistent throughout the app.
+
+Error text should be understandable without exposing HTTP or Dio details.
+Keep content visible during refresh when practical. Use the shared
+`Responsive` helper for bounded spacing, icons, and viewport measurements.
+Use available widget constraints for structural decisions so a narrow browser
+window behaves like a narrow mobile viewport. A section label and its secondary
+counter share a line while they both fit and wrap onto a second line when they
+do not, so neither one is truncated or clipped. The breed result area adjusts
+its grid columns below a fixed search section; detail uses a fixed top gallery
+on narrow widths and a side-by-side gallery with independently scrolling
+information on wide widths.
+Keep content widths readable instead of scaling everything to the screen.

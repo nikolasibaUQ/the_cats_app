@@ -105,6 +105,7 @@ class _BreedGalleryState extends State<BreedGallery> {
             label: widget.label,
             caption: strings.noPhoto,
             loading: isLoadingPhotos,
+            showStateLabel: !widget.photoRequest.hasError,
           )
         else
           PageView.builder(

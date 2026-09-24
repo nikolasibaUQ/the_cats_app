@@ -5,8 +5,8 @@ import 'package:the_cats_app/domain/entities/breed.dart';
 import 'package:the_cats_app/domain/entities/breed_photo.dart';
 import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/breeds_providers.dart';
-import 'package:the_cats_app/presentation/catalog/breeds_catalog_controller.dart';
-import 'package:the_cats_app/presentation/catalog/breeds_catalog_view.dart';
+import 'package:the_cats_app/presentation/catalog/controllers/breeds_catalog_controller.dart';
+import 'package:the_cats_app/presentation/catalog/providers/breeds_catalog_view_provider.dart';
 
 const int _breedCount = 12;
 

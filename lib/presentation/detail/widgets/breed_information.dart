@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/breed.dart';
-import '../../../domain/entities/breed_flag.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
-import '../../../shared/widgets/rating_dots.dart';
-import '../../../shared/widgets/section_title.dart';
+import '../../../shared/widgets/widgets.dart';
 import '../../breed_formatting.dart';
+import 'breed_fact_card.dart';
+import 'section_panel.dart';
 
 class BreedInformation extends StatelessWidget {
   const BreedInformation({super.key, required this.breed});
@@ -30,47 +30,33 @@ class BreedInformation extends StatelessWidget {
       imperial: strings.heightImperialValue,
     );
     final temperament = _split(breed.temperament);
-    final ratings = <(String, int?)>[
-      (strings.intelligence, breed.intelligence),
-      (strings.adaptability, breed.adaptability),
-      (strings.energy, breed.energyLevel),
-      (strings.affection, breed.affectionLevel),
-      (strings.childFriendly, breed.childFriendly),
-      (strings.dogFriendly, breed.dogFriendly),
-      (strings.strangerFriendly, breed.strangerFriendly),
-      (strings.socialNeeds, breed.socialNeeds),
-      (strings.vocalisation, breed.vocalisation),
-      (strings.groomingNeeds, breed.grooming),
-      (strings.sheddingLevel, breed.sheddingLevel),
-      (strings.healthIssues, breed.healthIssues),
-    ].where((rating) => rating.$2 != null).toList();
     final facts = <Widget>[
       if (breed.origin != null)
-        _FactCard(
+        BreedFactCard(
           icon: Icons.public_rounded,
           label: strings.origin,
           value: breed.origin!,
         ),
       if (breed.breedGroup != null)
-        _FactCard(
+        BreedFactCard(
           icon: Icons.category_outlined,
           label: strings.group,
           value: breed.breedGroup!,
         ),
       if (breed.lifeSpan != null)
-        _FactCard(
+        BreedFactCard(
           icon: Icons.event_outlined,
           label: strings.lifeSpan,
           value: strings.lifeSpanValue(breed.lifeSpan!),
         ),
       if (weightLabel != null)
-        _FactCard(
+        BreedFactCard(
           icon: Icons.monitor_weight_outlined,
           label: strings.weight,
           value: weightLabel,
         ),
       if (heightLabel != null)
-        _FactCard(
+        BreedFactCard(
           icon: Icons.height_rounded,
           label: strings.height,
           value: heightLabel,
@@ -86,15 +72,6 @@ class BreedInformation extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        if (breed.altNames != null) ...[
-          SizedBox(height: responsive.spacing(4)),
-          Text(
-            strings.alsoKnownAs(breed.altNames!),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
         SizedBox(height: responsive.spacing(20)),
         Divider(height: 1, color: theme.colorScheme.outlineVariant),
         if (facts.isNotEmpty) ...[
@@ -107,7 +84,7 @@ class BreedInformation extends StatelessWidget {
           SizedBox(height: responsive.spacing(28)),
           SectionTitle(strings.descriptionTitle),
           SizedBox(height: responsive.spacing(12)),
-          _SurfacePanel(
+          SectionPanel(
             child: Text(
               breed.description!,
               style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
@@ -118,40 +95,11 @@ class BreedInformation extends StatelessWidget {
           SizedBox(height: responsive.spacing(28)),
           SectionTitle(strings.historyTitle),
           SizedBox(height: responsive.spacing(12)),
-          _SurfacePanel(
+          SectionPanel(
             child: Text(
               breed.history!,
               style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
             ),
-          ),
-        ],
-        if (ratings.isNotEmpty) ...[
-          SizedBox(height: responsive.spacing(28)),
-          SectionTitle(strings.characteristics),
-          SizedBox(height: responsive.spacing(12)),
-          _SurfacePanel(
-            child: Column(
-              children: [
-                for (final (index, rating) in ratings.indexed) ...[
-                  if (index > 0) const Divider(height: 24),
-                  _TraitRating(label: rating.$1, value: rating.$2!),
-                ],
-              ],
-            ),
-          ),
-        ],
-        if (breed.flags.isNotEmpty) ...[
-          SizedBox(height: responsive.spacing(28)),
-          SectionTitle(strings.traitsTitle),
-          SizedBox(height: responsive.spacing(12)),
-          Wrap(
-            spacing: responsive.spacing(8),
-            runSpacing: responsive.spacing(8),
-            children: [
-              for (final flag in BreedFlag.values)
-                if (breed.flags.contains(flag))
-                  _TraitChip(label: _flagLabel(strings, flag), tinted: true),
-            ],
           ),
         ],
         if (temperament.isNotEmpty) ...[
@@ -162,7 +110,7 @@ class BreedInformation extends StatelessWidget {
             spacing: responsive.spacing(8),
             runSpacing: responsive.spacing(8),
             children: [
-              for (final quality in temperament) _TraitChip(label: quality),
+              for (final quality in temperament) _QualityChip(label: quality),
             ],
           ),
         ],
@@ -193,41 +141,6 @@ List<String> _split(String? value) => value == null
           if (part.trim().isNotEmpty) part.trim(),
       ];
 
-String _flagLabel(AppLocalizations strings, BreedFlag flag) => switch (flag) {
-  BreedFlag.indoor => strings.flagIndoor,
-  BreedFlag.lap => strings.flagLap,
-  BreedFlag.hypoallergenic => strings.flagHypoallergenic,
-  BreedFlag.natural => strings.flagNatural,
-  BreedFlag.rare => strings.flagRare,
-  BreedFlag.rex => strings.flagRex,
-  BreedFlag.hairless => strings.flagHairless,
-  BreedFlag.shortLegs => strings.flagShortLegs,
-  BreedFlag.suppressedTail => strings.flagSuppressedTail,
-  BreedFlag.experimental => strings.flagExperimental,
-};
-
-class _SurfacePanel extends StatelessWidget {
-  const _SurfacePanel({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final responsive = Responsive.of(context);
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(responsive.spacing(20)),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(responsive.radius(16)),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: child,
-    );
-  }
-}
-
 /// Lays the overview cards out three per row, wrapping any remaining card.
 class _FactGrid extends StatelessWidget {
   const _FactGrid({required this.cards});
@@ -255,109 +168,19 @@ class _FactGrid extends StatelessWidget {
   }
 }
 
-class _FactCard extends StatelessWidget {
-  const _FactCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final responsive = Responsive.of(context);
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsive.spacing(12),
-        vertical: responsive.spacing(14),
-      ),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(responsive.radius(14)),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: responsive.icon(16), color: colors.primary),
-              SizedBox(width: responsive.spacing(6)),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: responsive.spacing(6)),
-          Text(
-            value,
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Outlined pill for single-word breed qualities.
-///
-/// Traits the breed has are tinted so this row does not read as a copy of the
-/// temperament row below it.
-class _TraitChip extends StatelessWidget {
-  const _TraitChip({required this.label, this.tinted = false});
+/// Outlined pill for single-word breed qualities such as temperament words.
+class _QualityChip extends StatelessWidget {
+  const _QualityChip({required this.label});
 
   final String label;
-  final bool tinted;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Chip(
       label: Text(label),
-      backgroundColor: tinted
-          ? colors.primary.withValues(alpha: 0.10)
-          : colors.surfaceContainer,
-      labelStyle: tinted
-          ? TextStyle(color: colors.primary, fontWeight: FontWeight.w600)
-          : null,
-      side: BorderSide(
-        color: tinted
-            ? colors.primary.withValues(alpha: 0.30)
-            : colors.outlineVariant,
-      ),
+      backgroundColor: colors.surfaceContainer,
+      side: BorderSide(color: colors.outlineVariant),
     );
   }
-}
-
-class _TraitRating extends StatelessWidget {
-  const _TraitRating({required this.label, required this.value});
-
-  final String label;
-  final int value;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(child: Text(label)),
-      RatingDots(value: value, semanticLabel: label),
-    ],
-  );
 }

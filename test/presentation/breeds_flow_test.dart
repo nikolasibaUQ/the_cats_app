@@ -5,12 +5,11 @@ import 'package:the_cats_app/app/app_router.dart';
 import 'package:the_cats_app/app/cats_app.dart';
 import 'package:the_cats_app/di/breeds_dependencies.dart';
 import 'package:the_cats_app/domain/entities/breed.dart';
-import 'package:the_cats_app/domain/entities/breed_flag.dart';
 import 'package:the_cats_app/domain/entities/breed_photo.dart';
 import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/detail/widgets/breed_gallery.dart';
 import 'package:the_cats_app/presentation/photo_framing.dart';
-import 'package:the_cats_app/shared/widgets/app_remote_image.dart';
+import 'package:the_cats_app/presentation/splash/controllers/splash_controller.dart';
 import 'package:the_cats_app/shared/widgets/localized_state_illustration.dart';
 
 class _FakeBreedsRepository implements BreedsRepository {
@@ -24,7 +23,6 @@ class _FakeBreedsRepository implements BreedsRepository {
       Breed(
         id: 'beng',
         name: 'Bengal',
-        altNames: 'Bengal Cat',
         origin: 'United States',
         description:
             'An active and curious cat with a distinctive spotted coat and a '
@@ -37,15 +35,7 @@ class _FakeBreedsRepository implements BreedsRepository {
         breedGroup: 'Short-haired',
         history:
             'Developed by crossing domestic cats with the Asian leopard cat.',
-        wikipediaUrl: 'https://en.wikipedia.org/wiki/Bengal_cat',
         temperament: 'Alert, Agile, Energetic',
-        adaptability: 4,
-        affectionLevel: 4,
-        childFriendly: 5,
-        energyLevel: 5,
-        intelligence: 5,
-        sheddingLevel: 3,
-        flags: {BreedFlag.indoor, BreedFlag.hypoallergenic},
       ),
     ];
   }
@@ -76,8 +66,7 @@ class _ManyBreedsRepository implements BreedsRepository {
   }) async => const [];
 }
 
-/// Breeds shaped like the current live response: facts but no ratings, traits,
-/// or article link.
+/// Breeds shaped like the free-plan live response: only the factual fields.
 class _LiveShapeRepository implements BreedsRepository {
   @override
   Future<List<Breed>> getBreeds() async => const [
@@ -108,6 +97,47 @@ class _GalleryFailureRepository extends _FakeBreedsRepository {
   @override
   Future<List<BreedPhoto>> getBreedPhotos(String breedId, {int limit = 8}) =>
       Future<List<BreedPhoto>>.error(Exception('Gallery unavailable'));
+}
+
+class _RetryingBreedsRepository implements BreedsRepository {
+  int requests = 0;
+
+  @override
+  Future<List<Breed>> getBreeds() async {
+    requests++;
+    if (requests == 1) {
+      throw Exception('Temporary API failure');
+    }
+    return [
+      Breed(
+        id: 'breed-$requests',
+        name: requests == 2 ? 'Abyssinian' : 'Bengal',
+      ),
+    ];
+  }
+
+  @override
+  Future<List<BreedPhoto>> getBreedPhotos(
+    String breedId, {
+    int limit = 8,
+  }) async => const <BreedPhoto>[];
+}
+
+class _FailOnceBreedsRepository implements BreedsRepository {
+  int requests = 0;
+
+  @override
+  Future<List<Breed>> getBreeds() async {
+    requests++;
+    if (requests == 1) throw Exception('Temporary API failure');
+    return const [Breed(id: 'beng', name: 'Bengal')];
+  }
+
+  @override
+  Future<List<BreedPhoto>> getBreedPhotos(
+    String breedId, {
+    int limit = 8,
+  }) async => const <BreedPhoto>[];
 }
 
 /// Breed whose primary photo is landscape while the gallery also holds a
@@ -176,7 +206,9 @@ void main() {
     // While the splash is on screen the catalog is not mounted yet.
     expect(find.byType(EditableText), findsNothing);
 
-    await tester.pump(const Duration(milliseconds: 1800));
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.byType(EditableText), findsNothing);
+    await tester.pump(const Duration(milliseconds: 200));
     await tester.pumpAndSettle();
 
     // The splash replaces itself, so no extra browser-history stop is created.
@@ -184,15 +216,67 @@ void main() {
     expect(find.text('Abyssinian'), findsOneWidget);
   });
 
+  testWidgets('the splash artwork fits narrow, landscape, and wide viewports', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    // Narrow phone: the artwork keeps a modest, width-proportional size.
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    await pumpApp(tester, repository: _FakeBreedsRepository(), location: '/');
+    expect(tester.takeException(), isNull);
+    expect(find.byType(Image), findsOneWidget);
+    expect(tester.getSize(find.byType(Image)).width, lessThan(320 * 0.6));
+
+    // Landscape phone: the artwork shrinks before the screen overflows.
+    await tester.binding.setSurfaceSize(const Size(568, 320));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byType(Image)).height, lessThanOrEqualTo(320));
+
+    // Wide desktop: the artwork is capped instead of scaling to the screen.
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byType(Image)).width, 280);
+
+    // Let the hand-over fire so no timer stays pending at test end.
+    await tester.pump(SplashController.displayDuration);
+    await tester.pumpAndSettle();
+    expect(find.byType(EditableText), findsOneWidget);
+  });
+
+  testWidgets('catalog retries an error and refreshes loaded breeds', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.binding.setSurfaceSize(const Size(800, 1000));
+    final repository = _RetryingBreedsRepository();
+    await pumpApp(tester, repository: repository, location: '/breeds');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Could not load breeds'), findsOneWidget);
+    expect(find.text('Try again'), findsOneWidget);
+
+    await tester.tap(find.text('Try again'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Abyssinian'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Refresh breeds'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Bengal'), findsOneWidget);
+    expect(repository.requests, 3);
+  });
+
   testWidgets('search filters breeds and a card opens detail', (tester) async {
     await pumpApp(tester, repository: _FakeBreedsRepository(), location: '/');
-    await tester.pump(const Duration(milliseconds: 1800));
+    await tester.pump(SplashController.displayDuration);
     await tester.pumpAndSettle();
 
     expect(find.text('Abyssinian'), findsOneWidget);
     expect(find.text('Bengal'), findsOneWidget);
-    // The catalog card reports intelligence, as the approved mock shows.
-    expect(find.byIcon(Icons.circle), findsNWidgets(5));
 
     await tester.enterText(find.byType(EditableText), '  beng  ');
     await tester.pump(const Duration(milliseconds: 349));
@@ -224,7 +308,7 @@ void main() {
   ) async {
     final repository = _FakeBreedsRepository();
     await pumpApp(tester, repository: repository, location: '/');
-    await tester.pump(const Duration(milliseconds: 1800));
+    await tester.pump(SplashController.displayDuration);
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(EditableText), 'beng');
@@ -265,6 +349,33 @@ void main() {
     expect(find.text('Bengal'), findsOneWidget);
   });
 
+  testWidgets('detail reports an unavailable breed ID', (tester) async {
+    await pumpApp(
+      tester,
+      repository: _FakeBreedsRepository(),
+      location: '/breeds/missing',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Breed not found'), findsOneWidget);
+    expect(find.byKey(const Key('detail-back')), findsOneWidget);
+  });
+
+  testWidgets('detail retries a recoverable list failure', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.binding.setSurfaceSize(const Size(800, 1000));
+    final repository = _FailOnceBreedsRepository();
+    await pumpApp(tester, repository: repository, location: '/breeds/beng');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Could not load this breed'), findsOneWidget);
+    await tester.tap(find.text('Try again'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Bengal'), findsOneWidget);
+    expect(repository.requests, 2);
+  });
+
   testWidgets('detail shows the breed data the API provides', (tester) async {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.binding.setSurfaceSize(const Size(480, 900));
@@ -279,7 +390,6 @@ void main() {
     // overview cards are the only place that repeats data from the header.
     expect(find.text('8 - 15 lb'), findsOneWidget);
     expect(find.text('United States'), findsOneWidget);
-    expect(find.text('Also known as Bengal Cat'), findsOneWidget);
     expect(find.text('BENG'), findsOneWidget);
 
     for (final label in const [
@@ -289,13 +399,6 @@ void main() {
       '13-16 in',
       'HISTORY',
       'Developed by crossing domestic cats with the Asian leopard cat.',
-      'Intelligence',
-      'Adaptability',
-      'Child friendly',
-      'Shedding',
-      'TRAITS',
-      'Indoor',
-      'Hypoallergenic',
       'TEMPERAMENT',
       'Alert',
       'EXPLORE OTHER BREEDS',
@@ -460,21 +563,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(find.byType(BreedGallery)).dy, galleryTopBefore);
     final imageInsideRow = find.ancestor(
-      of: find.byType(AppRemoteImage),
+      of: find.byType(BreedGallery),
       matching: find.byType(Row),
     );
     expect(imageInsideRow, findsNothing);
 
-    // The approved mock lists adaptability among the characteristics.
+    // The information scrolls while the photo area stays fixed.
     await tester.scrollUntilVisible(
-      find.text('Adaptability'),
+      find.text('HISTORY'),
       300,
       scrollable: find.byWidgetPredicate(
         (widget) =>
             widget is Scrollable && widget.axisDirection == AxisDirection.down,
       ),
     );
-    expect(find.text('Adaptability'), findsOneWidget);
+    expect(find.text('HISTORY'), findsOneWidget);
     expect(tester.getTopLeft(find.byType(BreedGallery)).dy, galleryTopBefore);
 
     await tester.binding.setSurfaceSize(const Size(1440, 900));
@@ -516,7 +619,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('detail omits the sections the live payload does not supply', (
+  testWidgets('detail shows the facts the live payload supplies', (
     tester,
   ) async {
     await pumpApp(
@@ -539,15 +642,13 @@ void main() {
       expect(find.text(label), findsOneWidget);
     }
 
-    // Sections without values stay out of the page instead of rendering empty.
+    // The article action closes the page, always through the Wikipedia search.
     await tester.scrollUntilVisible(
       find.text('Read all article on Wikipedia'),
       300,
       scrollable: detailScrollable(),
     );
     expect(find.text('Read all article on Wikipedia'), findsOneWidget);
-    expect(find.text('CHARACTERISTICS'), findsNothing);
-    expect(find.text('TRAITS'), findsNothing);
   });
 
   testWidgets('gallery failure keeps breed information and offers retry', (

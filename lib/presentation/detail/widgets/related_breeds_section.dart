@@ -60,7 +60,6 @@ class RelatedBreedsSection extends StatelessWidget {
                 width: responsive.size(180),
                 child: BreedCard(
                   breed: breed,
-                  compact: true,
                   onTap: () => onBreedSelected(breed),
                 ),
               );

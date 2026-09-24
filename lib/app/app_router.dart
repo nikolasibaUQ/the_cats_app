@@ -1,10 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../presentation/catalog/breeds_screen.dart';
-import '../presentation/detail/breed_detail_screen.dart';
+import '../presentation/catalog/screens/breeds_screen.dart';
+import '../presentation/detail/screens/breed_detail_screen.dart';
+import '../presentation/splash/screens/splash_screen.dart';
 import 'app_routes.dart';
-import 'splash_screen.dart';
 
 part 'app_router.g.dart';
 

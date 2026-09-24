@@ -3,13 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../app/language_menu.dart';
-import '../../../domain/entities/breed.dart';
-import '../../../domain/entities/breed_photo.dart';
+import '../../../app/app_locale_controller.dart';
+import '../../../domain/entities/entities.dart';
 import '../../../domain/policies/breed_gallery.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
-import '../../../shared/widgets/overlay_circle_surface.dart';
+import '../../../shared/widgets/widgets.dart';
 import '../../photo_framing.dart';
 import 'breed_gallery.dart';
 
@@ -29,6 +28,8 @@ class BreedDetailHero extends StatefulWidget {
     required this.photoRequest,
     required this.onRetryGallery,
     required this.onBack,
+    required this.selectedLanguage,
+    required this.onLanguageSelected,
     required this.borderRadius,
   });
 
@@ -37,6 +38,8 @@ class BreedDetailHero extends StatefulWidget {
   final AsyncValue<List<BreedPhoto>> photoRequest;
   final VoidCallback onRetryGallery;
   final VoidCallback onBack;
+  final AppLanguage selectedLanguage;
+  final ValueChanged<AppLanguage> onLanguageSelected;
 
   /// Rounded edges of the photo area. Detail that fills the top of a narrow
   /// screen rounds its bottom corners only.
@@ -119,7 +122,12 @@ class _BreedDetailHeroState extends State<BreedDetailHero> {
                 Positioned(
                   top: responsive.spacing(12),
                   right: responsive.spacing(12),
-                  child: const OverlayCircleSurface(child: LanguageMenu()),
+                  child: OverlayCircleSurface(
+                    child: LanguageMenu(
+                      selected: widget.selectedLanguage,
+                      onSelected: widget.onLanguageSelected,
+                    ),
+                  ),
                 ),
                 Positioned(
                   right: responsive.spacing(12),

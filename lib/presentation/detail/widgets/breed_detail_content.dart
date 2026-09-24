@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/app_locale_controller.dart';
 import '../../../domain/entities/breed.dart';
 import '../../../domain/entities/breed_photo.dart';
 import '../../../domain/policies/breed_gallery.dart';
@@ -32,6 +33,8 @@ class BreedDetailContent extends StatelessWidget {
     required this.onBreedSelected,
     required this.onShowAllBreeds,
     required this.onBack,
+    required this.selectedLanguage,
+    required this.onLanguageSelected,
   });
 
   final Breed breed;
@@ -42,6 +45,8 @@ class BreedDetailContent extends StatelessWidget {
   final ValueChanged<Breed> onBreedSelected;
   final VoidCallback onShowAllBreeds;
   final VoidCallback onBack;
+  final AppLanguage selectedLanguage;
+  final ValueChanged<AppLanguage> onLanguageSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +62,7 @@ class BreedDetailContent extends StatelessWidget {
       SizedBox(height: responsive.spacing(28)),
       ExternalLinkPanel(
         title: strings.wikipediaTitle,
-        url: breedArticleUrl(breed),
+        url: breedArticleSearchUrl(breed),
       ),
     ];
     return SafeArea(
@@ -73,6 +78,8 @@ class BreedDetailContent extends StatelessWidget {
                 photoRequest: photoRequest,
                 onRetryGallery: onRetryGallery,
                 onBack: onBack,
+                selectedLanguage: selectedLanguage,
+                onLanguageSelected: onLanguageSelected,
                 borderRadius: narrow
                     ? BorderRadius.vertical(
                         bottom: Radius.circular(responsive.radius(24)),

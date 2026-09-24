@@ -52,7 +52,3 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-# Local working notes for this technical challenge.
-/docs/
-/AGENTS.md

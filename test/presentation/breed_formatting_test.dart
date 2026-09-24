@@ -65,22 +65,9 @@ void main() {
     ));
   });
 
-  test('prefers the article the API supplies', () {
+  test('opens a Wikipedia search for the breed name', () {
     expect(
-      breedArticleUrl(
-        const Breed(
-          id: 'beng',
-          name: 'Bengal',
-          wikipediaUrl: 'https://en.wikipedia.org/wiki/Bengal_cat',
-        ),
-      ),
-      'https://en.wikipedia.org/wiki/Bengal_cat',
-    );
-  });
-
-  test('searches Wikipedia by name when the API supplies no article', () {
-    expect(
-      breedArticleUrl(const Breed(id: 'abys', name: 'Abyssinian')),
+      breedArticleSearchUrl(const Breed(id: 'abys', name: 'Abyssinian')),
       'https://en.wikipedia.org/w/index.php?search=Abyssinian+cat',
     );
   });

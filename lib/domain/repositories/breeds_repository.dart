@@ -1,5 +1,4 @@
-import '../entities/breed.dart';
-import '../entities/breed_photo.dart';
+import '../entities/entities.dart';
 
 abstract interface class BreedsRepository {
   Future<List<Breed>> getBreeds();

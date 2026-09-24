@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/app_routes.dart';
-import '../../app/language_menu.dart';
-import '../../domain/entities/breed.dart';
-import '../../l10n/generated/app_localizations.dart';
-import '../../shared/widgets/app_state_message.dart';
-import '../../shared/widgets/localized_state_illustration.dart';
-import 'breed_detail_providers.dart';
-import 'widgets/breed_detail_content.dart';
+import '../../../app/app_locale_controller.dart';
+import '../../../app/app_routes.dart';
+import '../../../domain/entities/breed.dart';
+import '../../../l10n/generated/app_localizations.dart';
+import '../../../shared/widgets/widgets.dart';
+import '../../breeds_providers.dart';
+import '../providers/breed_detail_providers.dart';
+import '../widgets/widgets.dart';
 
 /// Leaves detail without rebuilding the catalog.
 ///
@@ -37,6 +37,10 @@ class BreedDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final breed = ref.watch(breedByIdProvider(breedId));
+    final selectedLanguage = ref.watch(appLocaleControllerProvider);
+    final selectLanguage = ref
+        .read(appLocaleControllerProvider.notifier)
+        .select;
     final strings = AppLocalizations.of(context)!;
     return Scaffold(
       // The photo area carries its own controls once the breed is known. The
@@ -50,7 +54,12 @@ class BreedDetailScreen extends ConsumerWidget {
                 icon: const Icon(Icons.arrow_back_rounded),
               ),
               title: Text(strings.appTitle),
-              actions: const [LanguageMenu()],
+              actions: [
+                LanguageMenu(
+                  selected: selectedLanguage,
+                  onSelected: selectLanguage,
+                ),
+              ],
             )
           : null,
       body: breed.when(
@@ -69,7 +78,7 @@ class BreedDetailScreen extends ConsumerWidget {
             maxWidth: 240,
           ),
           action: FilledButton(
-            onPressed: () => ref.invalidate(breedByIdProvider(breedId)),
+            onPressed: () => ref.invalidate(breedsProvider),
             child: Text(strings.retry),
           ),
         ),
@@ -81,7 +90,11 @@ class BreedDetailScreen extends ConsumerWidget {
                   semanticLabel: strings.breedNotFound,
                 ),
               )
-            : _BreedDetailBody(breed: selected),
+            : _BreedDetailBody(
+                breed: selected,
+                selectedLanguage: selectedLanguage,
+                onLanguageSelected: selectLanguage,
+              ),
       ),
     );
   }
@@ -91,9 +104,15 @@ class BreedDetailScreen extends ConsumerWidget {
 /// never starts a photo request. A gallery failure stays inside the gallery
 /// and does not replace the breed information.
 class _BreedDetailBody extends ConsumerWidget {
-  const _BreedDetailBody({required this.breed});
+  const _BreedDetailBody({
+    required this.breed,
+    required this.selectedLanguage,
+    required this.onLanguageSelected,
+  });
 
   final Breed breed;
+  final AppLanguage selectedLanguage;
+  final ValueChanged<AppLanguage> onLanguageSelected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -110,6 +129,8 @@ class _BreedDetailBody extends ConsumerWidget {
           context.push(AppRoutes.breedDetailPath(selected.id)),
       onShowAllBreeds: () => context.go(AppRoutes.breeds),
       onBack: () => _leaveDetail(context),
+      selectedLanguage: selectedLanguage,
+      onLanguageSelected: onLanguageSelected,
     );
   }
 }

@@ -1,27 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/breed.dart';
-import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/app_remote_image.dart';
-import '../../../shared/widgets/rating_dots.dart';
 
 /// Renders one breed. Opening detail is the screen's decision, so the card only
 /// reports the tap through [onTap].
 class BreedCard extends StatelessWidget {
-  const BreedCard({
-    super.key,
-    required this.breed,
-    required this.onTap,
-    this.compact = false,
-  });
+  const BreedCard({super.key, required this.breed, required this.onTap});
 
   final Breed breed;
   final VoidCallback onTap;
-
-  /// Keeps only the identifying information, for suggestion rows where the card
-  /// is a secondary choice rather than the content of the screen.
-  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -66,32 +55,15 @@ class BreedCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (breed.origin != null ||
-                      (!compact && breed.intelligence != null)) ...[
+                  if (breed.origin != null) ...[
                     SizedBox(height: responsive.spacing(6)),
-                    Row(
-                      children: [
-                        if (breed.origin != null)
-                          Expanded(
-                            child: Text(
-                              breed.origin!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: colors.onSurfaceVariant),
-                            ),
-                          )
-                        else
-                          const Spacer(),
-                        if (!compact && breed.intelligence != null)
-                          RatingDots(
-                            value: breed.intelligence!,
-                            size: 8,
-                            semanticLabel: AppLocalizations.of(
-                              context,
-                            )!.intelligence,
-                          ),
-                      ],
+                    Text(
+                      breed.origin!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ],

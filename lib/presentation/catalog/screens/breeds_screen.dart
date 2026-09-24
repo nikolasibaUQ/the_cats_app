@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/app_routes.dart';
-import '../../app/language_menu.dart';
-import '../../l10n/generated/app_localizations.dart';
-import '../../shared/utils/responsive.dart';
-import '../../shared/widgets/app_state_message.dart';
-import '../../shared/widgets/localized_state_illustration.dart';
-import '../breeds_providers.dart';
-import 'breeds_catalog_controller.dart';
-import 'breeds_catalog_view.dart';
-import 'widgets/breeds_header.dart';
-import 'widgets/breeds_results_sliver.dart';
+import '../../../app/app_locale_controller.dart';
+import '../../../app/app_routes.dart';
+import '../../../l10n/generated/app_localizations.dart';
+import '../../../shared/utils/responsive.dart';
+import '../../../shared/widgets/widgets.dart';
+import '../../breeds_providers.dart';
+import '../controllers/breeds_catalog_controller.dart';
+import '../providers/breeds_catalog_view_provider.dart';
+import '../widgets/widgets.dart';
 
 /// Renders the catalog. Loading, retry, search input, navigation, and layout
 /// are coordinated here; matching breeds are resolved by
@@ -25,6 +23,10 @@ class BreedsScreen extends ConsumerWidget {
     final catalogState = ref.watch(breedsCatalogControllerProvider);
     final catalog = ref.watch(breedsCatalogViewProvider);
     final controller = ref.read(breedsCatalogControllerProvider.notifier);
+    final selectedLanguage = ref.watch(appLocaleControllerProvider);
+    final selectLanguage = ref
+        .read(appLocaleControllerProvider.notifier)
+        .select;
     final strings = AppLocalizations.of(context)!;
     final responsive = Responsive.of(context);
     return Scaffold(
@@ -34,7 +36,7 @@ class BreedsScreen extends ConsumerWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
-          const LanguageMenu(),
+          LanguageMenu(selected: selectedLanguage, onSelected: selectLanguage),
           IconButton(
             tooltip: strings.refreshBreeds,
             onPressed: () => ref.invalidate(breedsProvider),

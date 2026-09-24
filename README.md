@@ -1,166 +1,46 @@
 # The Cats 🐈
 
-A Flutter technical challenge built around [The Cat API](https://thecatapi.com/).
-Browse cat breeds, search by name or origin, and open a detail page that also
-works as a direct Web link.
+<p align="center">
+  <img src="assets/images/splash_image.png" width="180" alt="The Cats illustration">
+</p>
 
-> **Beta status:** The three-screen journey and API integration are implemented.
-> The release build succeeds locally. Web image handling was verified in a real
-> browser for the list, detail, and missing-image cases. Deployment on a host
-> still needs review.
+<p align="center">
+  A calm, responsive Flutter app for discovering cat breeds.
+</p>
 
-## At a glance
+<p align="center">
+  <a href="https://docs.flutter.dev/get-started/install"><img src="https://img.shields.io/badge/Flutter-3.35.6-02569B?logo=flutter&logoColor=white" alt="Flutter 3.35.6"></a>
+  <a href="https://dart.dev"><img src="https://img.shields.io/badge/Dart-3.9.2-0175C2?logo=dart&logoColor=white" alt="Dart 3.9.2"></a>
+  <a href="https://riverpod.dev"><img src="https://img.shields.io/badge/State-Riverpod-00BFA5" alt="Riverpod"></a>
+  <img src="https://img.shields.io/badge/Platform-Web%20%7C%20iOS%20%7C%20Android-5C6BC0" alt="Web, iOS and Android">
+</p>
 
-| Area | Current beta |
-| --- | --- |
-| Splash | Entry route moves to the breed list without an extra history stop |
-| Breeds | API list, debounced local search, card with origin and intelligence, progressive reveal, refresh, and complete states |
-| Detail | Photo area shaped by the photo it shows, with overlaid controls, the facts the app has (origin, group, life span, weight, height), history, ratings and traits, suggestions, and Wikipedia |
-| Languages | Spanish and English UI, with device-language default, in-app selector, and metric/imperial weight |
-| Web hosting | Dockerfile and Nginx route fallback present |
-| Tests | DTO parsing and mapping, domain search and gallery rules, weight formatting, provider state, responsive state artwork, image strategy, and interaction flows |
+> 🧪 **Beta:** the Splash → Breeds → Breed Detail journey, API integration,
+> localization, Web routing, and automated checks are implemented.
 
-## Use the app
+<p align="center">
+  <a href="https://thecats.kobrax.dev"><img src="https://img.shields.io/badge/🚀%20OPEN%20THE%20LIVE%20DEMO-thecats.kobrax.dev-FF7043?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Open The Cats live demo"></a>
+</p>
 
-1. Open `/` to enter the breed list through the brief splash.
-2. Browse eight breeds at a time or search the full loaded list by name or
-   origin. Select a card to open its detail page.
-3. In detail, use the controls over the photo to go back or switch language.
-   Swipe through photos, tap one to open the full-screen viewer, and scroll the
-   information independently: overview (origin, group, life span, weight,
-   height), description, history, characteristics, traits, temperament,
-   suggested breeds, and the Wikipedia article. A detail URL can load on its
-   own, and going back keeps the catalog exactly as it was left.
+> [!TIP]
+> **No installation needed:** [open the deployed app now →](https://thecatsapp.kobrax.dev)
 
-The current API response carries the factual fields (description, history,
-group, ranges, and temperament) but no longer returns the numeric trait ratings,
-binary traits, alternative names, or a Wikipedia link on the free plan. The app
-uses only the API payload: it omits missing optional sections rather than
-shipping a captured data copy. The article action uses `wikipedia_url` when the
-API provides it and otherwise opens a Wikipedia search for the breed name.
+## ✨ Highlights
 
-The UI uses a warm, restrained style and adapts from mobile to wider Web
-layouts. Photos show loading artwork while they download and unavailable
-artwork when the URL is missing or fails, so no frame stays blank. Each state
-selects a 3:4 or 4:3 asset from its frame and Flutter renders the localized copy.
-In detail, the photo area adopts the shape of the photo it shows — bounded
-between 3:4 and 3:2 — instead of zooming every photo into the same rectangle.
-Because the image host sends no CORS headers, Web builds render photos through
-an HTML `<img>` element, which is also why the browser console stays clean
-instead of reporting one blocked request per photo. API errors offer retry
-instead of exposing exception text. Full-screen loading, empty, and failure
-states use responsive cat artwork from `assets/images/`. Trait values describe
-**how much of a trait** a breed has, not whether that trait is universally good;
-for example, high grooming means more care is needed.
+- 🌎 Spanish and English interface, with system-language and measurement defaults.
+- 🔎 Breed catalogue with debounced local search, progressive reveal, refresh,
+  and recoverable error states.
+- 🖼️ Detail route, gallery, responsive layouts, and intentional
+  missing/loading-image states.
+- 🧱 Layered structure with Riverpod, Dio, GoRouter, DTO-to-entity mapping,
+  and tests across Data, Domain, and Presentation.
 
-The shared [`Responsive` helper](lib/shared/responsive.dart) supplies bounded
-spacing, radii, icon sizes, and viewport measurements. The list keeps its title
-and search field visible while only the results scroll, chooses grid columns
-from the available width, initially renders eight cards, and reveals more
-without another list request. Detail keeps the photo fixed above the
-information on mobile and beside it on wide screens; only the information
-area scrolls. Flutter's text theme still handles text scaling and accessibility.
+## 🧰 Requirements
 
-The interface follows the device language when it is Spanish or English.
-The language button in the app bar — and over the detail photo — also lets users
-choose **Español**, **English**, or the system setting for the current session.
-The active language also selects the reading system of the weight: English shows
-pounds, the remaining languages show kilograms, and a missing range falls back
-to the other one. UI copy lives in
-`lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; `flutter gen-l10n` regenerates
-the typed localization classes. Breed names, origins, and descriptions come
-from The Cat API in their original language and are not translated locally.
+- [Flutter 3.35.6](https://docs.flutter.dev/get-started/install) (Dart 3.9.2)
+- A public The Cat API key. The supplied example uses the public demo key.
 
-## Architecture and reasons
-
-The app keeps one bounded context — the breed journey — and organises it by
-layer, because with a single domain a feature wrapper only adds nesting. Its
-dependencies flow through these responsibilities:
-
-```text
-Presentation → Domain repository contract ← Data repository
-       │                                      │
-       └── Riverpod                    remote data source → Dio → The Cat API
-```
-
-- **Structure**: `lib/app/` is the shell; `lib/domain/` (`entities/`,
-  `policies/`, `repositories/`), `lib/data/` (`dtos/`, `mappers/`, `sources/`,
-  `repositories/`), and `lib/presentation/` are the layers; `lib/di/` holds the
-  composition root; `lib/shared/` holds what more than one flow uses; and
-  `assets/images/` holds responsive state artwork. Models are split by role, so an
-  import path already states whether it reads an application entity, a payload
-  shape, or a mapping helper. `test/` mirrors those layers. Introducing a second
-  domain would justify nesting the layers under a feature folder.
-- **Presentation** is grouped by `catalog` and `detail`; the splash entry
-  belongs to the app shell because it uses no breed state. Route
-  screens coordinate `AsyncValue`, navigation, and retries; generated Riverpod
-  providers own search input state, the derived catalog result, breed
-  selection, gallery loading, and the suggested breeds. Screens render values,
-  they do not compute them, and no widget parses JSON, builds a route string,
-  or owns HTTP. Opening an external article is the one platform call a widget
-  makes, from the panel that offers it.
-- **Domain** defines `Breed`, `BreedPhoto`, `BreedFlag`, and the repository
-  contract in app terms, with no Flutter, Dio, or JSON dependency. Name/origin
-  matching (`searchBreeds`) and gallery composition (`mergeGalleryPhotos`)
-  live here because they are rules rather than drawing code.
-- **Data** keeps Dio and response parsing in a remote data source. It also owns
-  the interpretation of raw API values: ratings outside 1–5 become unknown,
-  binary traits become typed values, and unusable links are dropped. The
-  repository maps only values returned by The Cat API.
-- **Composition root** (`lib/di/`) is the only place that constructs the
-  concrete Data implementation behind the Domain contract.
-- **Display rules** that depend on the active language, such as the weight
-  system, live in `lib/presentation/breed_formatting.dart` and are tested
-  without a widget tree.
-- **Routing** declares each path once in `lib/app/app_routes.dart`, shared by
-  the GoRouter provider and the screens that navigate. Detail is pushed on top
-  of the catalog, so returning restores it instead of rebuilding it.
-- **Shared widgets** contain only what several flows render: images, state
-  messages, section titles, rating dots, and the surface used by controls that
-  float over a photo.
-
-GoRouter provides addressable routes; generated Riverpod providers manage the
-API dependency, cached list state, and the derived search result. These
-boundaries make transport, mapping, state derivation, and UI behavior testable
-without putting networking in widgets. A use case would only forward repository
-methods here, so it is not included. Freezed is unnecessary because these DTOs
-are parsed once and do not need generated `copyWith` or value equality.
-
-| Decision | Benefit | Cost |
-| --- | --- | --- |
-| Debounce local search by 350 ms | Stable typing and no search requests | Results wait briefly after typing |
-| Derive matches in a provider | Screens render values and the rule is testable without widgets | One more provider to follow |
-| Reveal eight loaded breeds at a time | Shorter initial page without API churn | User chooses when to show more |
-| Resolve detail by ID from the list | Direct URLs work without another endpoint | A fresh detail visit loads the list |
-| Load up to eight photos for the selected breed | Focused carousel without one request per list card | Detail performs one extra request |
-| Keep search and gallery fixed | Query and selected photo remain visible | Less result space on short screens |
-| Map API DTOs to `Breed` | UI does not depend on response shape | Small mapping step |
-| Isolate Dio in a remote data source | Transport and parsing have one boundary | One additional data class |
-| Push detail on top of the catalog | Going back restores scroll, search, and state instead of rebuilding the screen | Navigation has to handle a direct visit that has no history |
-| Read the weight in the language's system | Each reader sees the measurement they use | One display rule with a fallback |
-| Open the Wikipedia article outside the app | The full article without embedding a browser | One more dependency (`url_launcher`) |
-| Suggest six related breeds with a counter | Keeps browsing local to the page | One derived provider |
-| Show every valid rating and trait the API supplies | The detail remains faithful to the live payload | Optional sections may be absent |
-| Keep state copy outside responsive artwork | One 3:4 and one 4:3 image serve every language and layout | Four bitmap assets increase the bundle size |
-| Render each fact once, in the overview cards | The column scans faster and no value appears twice | The header carries only the name and its alternatives |
-| Prefer the HTML element for Web photos | No blocked request and no repeated CORS error per photo, plus browser caching | Platform-view images are not captured by screenshot APIs |
-| Keep a placeholder under every photo | Loading and failures never leave a blank frame | One extra widget per image |
-| State when a breed has no photos | The empty area reads as intentional instead of unfinished | One more localized string |
-| Shape the detail photo area to the photo | No photo is zoomed just to fill a fixed rectangle | The area changes size between photos, within a bounded band |
-
-The API supports server pagination. This beta keeps one full-list request so
-search covers all breeds and direct detail routes reuse the same cached data;
-the list uses local progressive disclosure instead. Detail calls
-`/images/search` once with the selected `breed_ids` value and a limit of eight.
-Gallery failure does not hide the breed information or its primary image.
-Favorites and authentication are outside its scope. The detail column renders
-only the sections whose values the API supplied, so breeds with fewer fields
-show a shorter page rather than empty placeholders.
-
-## Run locally
-
-Install [Flutter 3.35.6](https://docs.flutter.dev/get-started/install), the
-version used by the Docker build (Dart 3.9.2), then run:
+## 🚀 Run locally
 
 ```bash
 flutter pub get --enforce-lockfile
@@ -170,100 +50,36 @@ cp .env.example .env
 flutter run -d chrome --dart-define-from-file=.env
 ```
 
-`.env.example` contains the public `DEMO-API-KEY` displayed on The Cat API
-website. Edit your ignored `.env` only for local configuration. The Dart code
-reads `CAT_API_KEY` from the build definition; it contains no API key. A request
-without a key returned HTTP 403 during implementation.
+`CAT_API_KEY` is build-time configuration, not a secret in a Flutter Web
+application. Use only a public/demo key in this client-only project. See the
+[API guide](docs/api.md#credentials-and-failures) for the rationale.
 
-The `.env` file keeps configuration out of Git, but it **does not keep a key
-secret in Flutter Web**. The build includes the value in code delivered to the
-browser, and the request header is visible in browser developer tools.
-Encryption inside the app would also require shipping the decryption key.
-Use only the public demo key for this client-only beta. A truly private key
-would require a server-side proxy that holds it and enforces limits; this
-project does not add that backend for the current challenge.
-
-## Quality checks
+## ✅ Verify
 
 ```bash
-dart run build_runner build --delete-conflicting-outputs
-flutter gen-l10n
+dart format --output=none --set-exit-if-changed lib test
 flutter analyze
-flutter test
+flutter test --coverage
 flutter build web --release --dart-define-from-file=.env
 ```
 
-Code generation, analysis, widget and unit tests, and the Web release build
-passed locally for this beta. Tests cover DTO parsing and the interpretation of
-raw API values (ratings, binary traits, weight ranges, and usable links),
-repository and gallery request mapping, domain name/origin matching, gallery
-image composition, weight formatting per language, the derived catalog
-view (reveal count, minimum-length hint, debounce, and clearing), a gallery
-failure at provider level, the fixed search area, progressive reveal without
-refetching, the splash handing over to the catalog on its own, search-to-detail,
-the full-screen photo viewer, the photo strategy and placeholder, the no-photo
-state, responsive state artwork, direct detail
-routes, language switching, every detail section rendered exactly once,
-related-breed navigation, the
-catalog keeping its state when detail is closed, and layouts at phone, tablet,
-and desktop widths. Repository failure behavior remains a testing priority.
+Run code generation again after changing Riverpod annotations or JSON models.
 
-`analysis_options.yaml` enables strict type checks, explicit public API types,
-file naming, and checks for dropped asynchronous work. Dart files with one
-principal class use its name in `snake_case`; the analyzer enforces the naming
-format, while the class-to-file match remains a review convention. Local type
-inference is kept where Dart can determine a concrete type.
+## 📚 Documentation
 
-## Web hosting
+| Document | What it covers |
+| --- | --- |
+| 🧱 [Architecture](docs/architecture.md) | Layer boundaries, dependencies, Riverpod roles, and testing boundaries |
+| 🐈 [API](docs/api.md) | Endpoints, payload interpretation, omitted fields, and credentials |
+| 🎨 [Design](docs/design.md) | Navigation, responsive behavior, localization, image states, and accessibility |
+| 🛠️ [Development](docs/development.md) | Setup, generation, quality checks, and test strategy |
+| 🌐 [Deployment](docs/deployment.md) | Flutter Web, Docker/Nginx, cache behavior, and hosting considerations |
+| 🤖 [Agent guidance](AGENTS.md) | Shared rules for human and AI-assisted development |
 
-The [Dockerfile](Dockerfile) pins Flutter 3.35.6, builds Flutter Web, and serves
-it with [Nginx](nginx.conf). Nginx falls back to `index.html` for application routes,
-which supports direct links and refreshes once deployed. The Docker image itself
-has not been built here; the release build it produces was verified separately
-(see below). Dokploy is a possible host, not an implemented dependency.
+## 🔎 Scope notes
 
-A release build was served locally and driven through the Chromium DevTools
-protocol at 1280×900 to check what a real browser does: `/` reached `/#/breeds`
-on its own, photos rendered, and the console reported zero blocked requests and
-zero uncaught errors on the catalog and on a detail page (the same run before
-the image strategy change reported six CORS-blocked requests).
-
-Flutter Web registers a service worker that caches the compiled assets. A
-browser that already visited the app can keep serving the previous
-`main.dart.js` after a redeploy, which looks like an application bug (for
-example, a splash screen that never advances). Reload with cache disabled, or
-clear the site data once, before diagnosing behavior on a hosted build.
-
-The Docker build uses the public `.env.example` and excludes the local `.env`
-from its build context. It never uses a private local key.
-
-Generated Riverpod, JSON, and localization Dart files are ignored by
-Git. The Docker build generates them before compiling Web. The shared
-[VS Code settings](.vscode/settings.json) hide those files in Explorer and
-search results; local launch settings remain private.
-
-## Current limits
-
-- A fresh detail URL fetches the full breed list before selecting its ID.
-- Opening a valid detail performs one additional request for up to eight breed
-  photos; if it fails, the primary photo and information remain available.
-- 41 of the 107 live breed entries have no image, so the unavailable
-  artwork is common in the current catalog.
-- Web photos use an HTML `<img>` element because `cdn2.thecatapi.com` sends no
-  CORS headers. Such images are not captured by Flutter screenshot or
-  `RepaintBoundary` APIs, and colour, opacity, and filter options do not apply
-  to them. Mobile and desktop are unaffected.
-- Web images wait for the browser to paint them, so a photo can appear a moment
-  after its card; the loading artwork underneath covers that moment instead of
-  leaving the frame empty.
-- The current free-plan response omits ratings, binary traits, alternative
-  names, and `wikipedia_url`. Those optional values remain absent unless The Cat
-  API returns them; the app does not bundle a data fallback.
-- The selected interface language resets when the app restarts. API-provided
-  content remains in the source language.
-- Desktop browser visuals were reviewed through a locally served release build
-  in Chromium, which also covered the splash hand-over and the catalog and
-  detail layouts at 1280×900. The hosted deployment, the Docker image, and
-  touch gestures on a real phone still need review before final submission. The
-  mobile list was reviewed on an iPhone simulator; responsive widget tests cover
-  list and detail layouts.
+- A direct detail link first loads the breed list, then resolves its ID.
+- A selected breed loads up to eight gallery photos; its details remain usable
+  if that request fails.
+- The free API plan does not supply ratings, traits, alternative names, or a
+  Wikipedia URL, so the app deliberately does not model or render them.

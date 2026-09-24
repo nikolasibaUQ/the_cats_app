@@ -1,11 +1,11 @@
 {
-    "name": "the_cats_app",
-    "short_name": "the_cats_app",
+    "name": "The Cats App",
+    "short_name": "Cats",
+    "description": "Descubre y busca tus gatos favoritos.",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

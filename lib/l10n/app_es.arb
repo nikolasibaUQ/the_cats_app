@@ -48,15 +48,7 @@
       }
     }
   },
-  "alsoKnownAs": "También conocido como {names}",
   "noPhoto": "No hay foto disponible de esta raza",
-  "@alsoKnownAs": {
-    "placeholders": {
-      "names": {
-        "type": "String"
-      }
-    }
-  },
   "overview": "Resumen",
   "origin": "Origen",
   "group": "Grupo de raza",
@@ -106,38 +98,6 @@
       }
     }
   },
-  "characteristics": "Características",
-  "adaptability": "Adaptabilidad",
-  "affection": "Afecto",
-  "energy": "Energía",
-  "groomingNeeds": "Necesidades de aseo",
-  "intelligence": "Inteligencia",
-  "childFriendly": "Amigable con niños",
-  "dogFriendly": "Amigable con perros",
-  "strangerFriendly": "Amigable con extraños",
-  "socialNeeds": "Necesita compañía",
-  "sheddingLevel": "Muda de pelo",
-  "healthIssues": "Problemas de salud",
-  "vocalisation": "Vocalización",
-  "ratingValue": "{value} / 5",
-  "@ratingValue": {
-    "placeholders": {
-      "value": {
-        "type": "int"
-      }
-    }
-  },
-  "traitsTitle": "Rasgos",
-  "flagIndoor": "Para interior",
-  "flagLap": "Gato de regazo",
-  "flagHypoallergenic": "Hipoalergénico",
-  "flagNatural": "Raza natural",
-  "flagRare": "Rara",
-  "flagRex": "Rex",
-  "flagHairless": "Sin pelo",
-  "flagShortLegs": "Patas cortas",
-  "flagSuppressedTail": "Cola corta",
-  "flagExperimental": "Experimental",
   "relatedBreeds": "Explora otras razas",
   "moreBreeds": "{count} más",
   "@moreBreeds": {

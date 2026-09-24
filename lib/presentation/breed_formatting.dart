@@ -22,15 +22,14 @@ import '../domain/entities/breed.dart';
       imperial: breed.heightImperial,
     );
 
-/// Article about [breed] to open outside the application.
+/// Wikipedia search for the breed name.
 ///
-/// The current API response no longer supplies `wikipedia_url`, so the display
-/// falls back to a Wikipedia search for the breed name. Both entries lead to
-/// the article, and a search never points at an unrelated page.
-String breedArticleUrl(Breed breed) =>
-    breed.wikipediaUrl ??
+/// The free-plan response never supplies `wikipedia_url`, so the article
+/// action always opens a search. The search resolves directly to the article
+/// and never points at an unrelated page.
+String breedArticleSearchUrl(Breed breed) =>
     'https://en.wikipedia.org/w/index.php'
-        '?search=${Uri.encodeQueryComponent('${breed.name} cat')}';
+    '?search=${Uri.encodeQueryComponent('${breed.name} cat')}';
 
 /// Picks the range that matches the active language.
 ///

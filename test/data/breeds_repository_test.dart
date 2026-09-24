@@ -70,7 +70,7 @@ void main() {
     expect(breeds.last.imageHeight, isNull);
   });
 
-  test('keeps optional attributes absent when the API omits them', () async {
+  test('keeps optional facts absent when the API omits them', () async {
     final dio = dioReturning([
       {
         'id': 'beng',
@@ -87,9 +87,8 @@ void main() {
       remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
     ).getBreeds();
 
-    expect(breeds.single.adaptability, isNull);
-    expect(breeds.single.intelligence, isNull);
-    expect(breeds.single.wikipediaUrl, isNull);
+    expect(breeds.single.breedGroup, isNull);
+    expect(breeds.single.history, isNull);
     expect(breeds.single.origin, 'United States');
     expect(
       breeds.single.imageUrl,

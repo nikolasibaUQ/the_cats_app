@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/breed.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
-import '../../../shared/widgets/app_state_message.dart';
-import '../../../shared/widgets/localized_state_illustration.dart';
-import '../breeds_catalog_view.dart';
+import '../../../shared/widgets/widgets.dart';
+import '../providers/breeds_catalog_view_provider.dart';
 import 'breed_card.dart';
 
 /// Renders derived catalog results.

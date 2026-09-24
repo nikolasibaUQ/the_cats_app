@@ -5,7 +5,7 @@ import 'package:the_cats_app/domain/entities/breed.dart';
 import 'package:the_cats_app/domain/entities/breed_photo.dart';
 import 'package:the_cats_app/domain/policies/breed_gallery.dart';
 import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
-import 'package:the_cats_app/presentation/detail/breed_detail_providers.dart';
+import 'package:the_cats_app/presentation/detail/providers/breed_detail_providers.dart';
 
 const String _primaryImage = 'https://example.com/beng.jpg';
 

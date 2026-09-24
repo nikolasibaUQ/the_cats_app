@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 
-import '../dtos/breed_dto.dart';
-import '../dtos/breed_photo_dto.dart';
+import '../dtos/dtos.dart';
 
 abstract interface class BreedsRemoteDataSource {
   Future<List<BreedDto>> getBreeds();
@@ -23,7 +22,7 @@ class DioBreedsRemoteDataSource implements BreedsRemoteDataSource {
   @override
   Future<List<BreedPhotoDto>> getBreedPhotos(
     String breedId, {
-    int limit = 8,
+    int limit = 10,
   }) async {
     final normalizedId = breedId.trim();
     if (normalizedId.isEmpty) {

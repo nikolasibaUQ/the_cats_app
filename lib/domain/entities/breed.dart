@@ -1,9 +1,8 @@
-import 'breed_flag.dart';
-
 /// A cat breed as the application uses it.
 ///
-/// Optional values are unknown when absent, which lets each screen decide what
-/// to omit instead of rendering an empty placeholder for every API field.
+/// It carries the fields the free-plan response supplies. Fields the plan
+/// never returns (ratings, alternative names, article links) are not mapped,
+/// so no code carries values that can never arrive.
 class Breed {
   const Breed({
     required this.id,
@@ -20,22 +19,7 @@ class Breed {
     this.heightImperial,
     this.breedGroup,
     this.history,
-    this.adaptability,
-    this.affectionLevel,
-    this.altNames,
-    this.childFriendly,
-    this.dogFriendly,
-    this.energyLevel,
-    this.flags = const <BreedFlag>{},
-    this.grooming,
-    this.healthIssues,
-    this.intelligence,
-    this.sheddingLevel,
-    this.socialNeeds,
-    this.strangerFriendly,
-    this.vocalisation,
     this.weightImperial,
-    this.wikipediaUrl,
   });
 
   final String id;
@@ -65,27 +49,4 @@ class Breed {
 
   /// Origin story of the breed, when the API explains it.
   final String? history;
-
-  /// Comma-separated alternative names, as supplied by the API.
-  final String? altNames;
-
-  /// Wikipedia article for the breed, when the API supplies an absolute URL.
-  final String? wikipediaUrl;
-
-  /// Traits rated from 1 to 5. Absent means unknown, never zero.
-  final int? adaptability;
-  final int? affectionLevel;
-  final int? childFriendly;
-  final int? dogFriendly;
-  final int? energyLevel;
-  final int? grooming;
-  final int? healthIssues;
-  final int? intelligence;
-  final int? sheddingLevel;
-  final int? socialNeeds;
-  final int? strangerFriendly;
-  final int? vocalisation;
-
-  /// Binary traits this breed has. Traits that do not apply stay absent.
-  final Set<BreedFlag> flags;
 }

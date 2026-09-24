@@ -1,5 +1,4 @@
-import '../../domain/entities/breed.dart';
-import '../../domain/entities/breed_photo.dart';
+import '../../domain/entities/entities.dart';
 import '../../domain/repositories/breeds_repository.dart';
 import '../sources/breeds_remote_data_source.dart';
 

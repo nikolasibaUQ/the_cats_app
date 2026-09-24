@@ -48,15 +48,7 @@
       }
     }
   },
-  "alsoKnownAs": "Also known as {names}",
   "noPhoto": "No photo available for this breed",
-  "@alsoKnownAs": {
-    "placeholders": {
-      "names": {
-        "type": "String"
-      }
-    }
-  },
   "overview": "Overview",
   "origin": "Origin",
   "group": "Breed group",
@@ -106,38 +98,6 @@
       }
     }
   },
-  "characteristics": "Characteristics",
-  "adaptability": "Adaptability",
-  "affection": "Affection",
-  "energy": "Energy",
-  "groomingNeeds": "Grooming needs",
-  "intelligence": "Intelligence",
-  "childFriendly": "Child friendly",
-  "dogFriendly": "Dog friendly",
-  "strangerFriendly": "Stranger friendly",
-  "socialNeeds": "Social needs",
-  "sheddingLevel": "Shedding",
-  "healthIssues": "Health issues",
-  "vocalisation": "Vocalisation",
-  "ratingValue": "{value} / 5",
-  "@ratingValue": {
-    "placeholders": {
-      "value": {
-        "type": "int"
-      }
-    }
-  },
-  "traitsTitle": "Traits",
-  "flagIndoor": "Indoor",
-  "flagLap": "Lap cat",
-  "flagHypoallergenic": "Hypoallergenic",
-  "flagNatural": "Natural breed",
-  "flagRare": "Rare",
-  "flagRex": "Rex",
-  "flagHairless": "Hairless",
-  "flagShortLegs": "Short legs",
-  "flagSuppressedTail": "Short tail",
-  "flagExperimental": "Experimental",
   "relatedBreeds": "Explore other breeds",
   "moreBreeds": "{count} more",
   "@moreBreeds": {

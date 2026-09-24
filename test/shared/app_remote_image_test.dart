@@ -3,11 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/l10n/generated/app_localizations.dart';
 import 'package:the_cats_app/shared/widgets/app_remote_image.dart';
 
-Widget _frame(Widget child) => MaterialApp(
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
-  supportedLocales: AppLocalizations.supportedLocales,
-  home: Scaffold(body: SizedBox(width: 200, height: 200, child: child)),
-);
+Widget _frame(Widget child, {Locale locale = const Locale('en')}) =>
+    MaterialApp(
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: SizedBox(width: 200, height: 200, child: child)),
+    );
 
 void main() {
   testWidgets('prefers the HTML element so the CDN is not blocked by CORS', (
@@ -32,26 +34,41 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps localized loading artwork behind the photo', (
+  testWidgets('replaces loading artwork when the photo is ready', (
     tester,
   ) async {
     await tester.pumpWidget(
       _frame(const AppRemoteImage(url: 'https://example.invalid/cat.jpg')),
     );
 
-    final stack = tester.widget<Stack>(
-      find
-          .descendant(
-            of: find.byType(AppRemoteImage),
-            matching: find.byType(Stack),
-          )
-          .first,
+    final networkImage = tester
+        .widgetList<Image>(find.byType(Image))
+        .firstWhere((image) => image.image is NetworkImage);
+    final context = tester.element(find.byType(AppRemoteImage));
+    const loadedPhoto = SizedBox(key: Key('loaded-photo'));
+
+    final pendingState = networkImage.loadingBuilder!(
+      context,
+      loadedPhoto,
+      const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 2),
     );
-    // The first layer remains visible until the remote image is ready.
-    expect(stack.children.first, isNot(isA<Image>()));
+    await tester.pumpWidget(_frame(pendingState));
     expect(
       find.byKey(const ValueKey<String>('assets/images/loading_4_3.png')),
       findsOneWidget,
+    );
+    expect(find.text('Loading cats'), findsOneWidget);
+
+    final loadedState = networkImage.loadingBuilder!(
+      context,
+      loadedPhoto,
+      null,
+    );
+    await tester.pumpWidget(_frame(loadedState));
+    expect(find.byKey(const Key('loaded-photo')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('assets/images/loading_4_3.png')),
+      findsNothing,
     );
   });
 
@@ -82,6 +99,7 @@ void main() {
       find.byKey(const ValueKey<String>('assets/images/no_find_4_3.png')),
       findsOneWidget,
     );
+    expect(find.text('No photo available for this breed'), findsOneWidget);
   });
 
   testWidgets('shows loading artwork while waiting for a missing URL', (
@@ -99,5 +117,13 @@ void main() {
       find.byKey(const ValueKey<String>('assets/images/no_find_4_3.png')),
       findsNothing,
     );
+  });
+
+  testWidgets('localizes the visible photo-state label', (tester) async {
+    await tester.pumpWidget(
+      _frame(const AppRemoteImage(url: null), locale: const Locale('es')),
+    );
+
+    expect(find.text('No hay foto disponible de esta raza'), findsOneWidget);
   });
 }
