@@ -89,11 +89,11 @@ jobs:
 
       # Debug APKs are signed automatically, so they can be built and
       # installed without any keystore configuration.
-      - name: Build debug APK
-        run: flutter build apk --debug --dart-define-from-file=.env.example
+      - name: Build release APK
+        run: flutter build apk --release --dart-define-from-file=.env.example
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: the-cats-app-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: the-cats-app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
