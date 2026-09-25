@@ -8,7 +8,7 @@
 PRODUCT_NAME = the_cats_app
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.kobrax.dev.theCatsApp
+PRODUCT_BUNDLE_IDENTIFIER = dev.kobrax.theCatsApp
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.kobrax.dev. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 dev.kobrax. All rights reserved.
