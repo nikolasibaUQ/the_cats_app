@@ -69,7 +69,8 @@ configuration. Deployment-specific behavior is documented in
 [deployment.md](deployment.md).
 
 GitHub Actions runs the everyday checks, coverage, and a release Web build on
-every push to `main`, and also produces a debug APK. See [ci.md](ci.md).
+every push to `main`, and also produces a release APK signed with the debug
+keystore fallback. See [ci.md](ci.md).
 
 ## Test organisation
 

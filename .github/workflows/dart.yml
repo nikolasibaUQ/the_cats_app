@@ -87,8 +87,9 @@ jobs:
           flutter gen-l10n
           dart run build_runner build --delete-conflicting-outputs
 
-      # Debug APKs are signed automatically, so they can be built and
-      # installed without any keystore configuration.
+      # The keystore is gitignored, so release builds fall back to the debug
+      # signing config in app/build.gradle.kts. The artifact is installable,
+      # but it is not a Play Store release APK.
       - name: Build release APK
         run: flutter build apk --release --dart-define-from-file=.env.example
 

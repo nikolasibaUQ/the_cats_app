@@ -13,7 +13,7 @@ for each other:
 | Job | Responsibility | Artifacts |
 | --- | --- | --- |
 | `quality` | Generation, formatting, analysis, tests, and the Web release build | `coverage`, `web-build` |
-| `android` | Android debug build | `the-cats-app-debug-apk` |
+| `android` | Android release build | `the-cats-app-release-apk` |
 
 Both jobs pin Flutter 3.35.6, the toolchain version used by the Docker build
 and local development (see [Toolchain](development.md#toolchain)).
@@ -47,11 +47,13 @@ The steps, in order:
 
 1. Set up Flutter and run `flutter pub get`.
 2. Regenerate localization and Riverpod/JSON code.
-3. `flutter build apk --debug --dart-define-from-file=.env.example` produces a
-   debug APK, signed with the automatically generated debug keystore, so no
-   signing configuration or secrets are required.
-4. The `the-cats-app-debug-apk` artifact contains `app-debug.apk`, installable
-   on a physical Android device.
+3. `flutter build apk --release --dart-define-from-file=.env.example`
+   produces a release APK. `key.properties` and the upload keystore are
+   gitignored, so `app/build.gradle.kts` falls back to the automatically
+   generated debug signing config on CI; no signing configuration or secrets
+   are required.
+4. The `the-cats-app-release-apk` artifact contains `app-release.apk`,
+   installable on a physical Android device.
 
 ## API key
 
@@ -67,7 +69,9 @@ the workflow run page under the Actions tab.
 
 ## Out of scope
 
-- Signed release APKs: they would require a keystore and GitHub secrets.
+- Play Store release signing: publishing requires the upload keystore and
+  GitHub secrets. The CI release APK is signed with the debug keystore
+  fallback and is not suitable for distribution to the Play Store.
 - iOS and macOS builds: they require macOS runners.
 - Deployment: the hosted flow in [deployment.md](deployment.md) is unchanged;
   CI validates the Web build but does not publish it.
