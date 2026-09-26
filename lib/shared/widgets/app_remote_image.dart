@@ -51,28 +51,45 @@ class AppRemoteImage extends StatelessWidget {
         showLabel: showStateLabel,
       );
     }
-    return Image.network(
-      imageUrl,
-      fit: fit,
-      width: double.infinity,
-      height: double.infinity,
-      semanticLabel: label,
-      // The Cat API serves images from cdn2.thecatapi.com, which sends no
-      // CORS headers. Preferring an HTML element prevents one blocked XHR per
-      // photo.
-      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
-      loadingBuilder: (context, child, progress) => progress == null
-          ? child
-          : _PhotoStateArtwork(
-              kind: StateIllustrationKind.loading,
-              label: strings.loadingCats,
-              showLabel: showStateLabel,
-            ),
-      errorBuilder: (context, error, stackTrace) => _PhotoStateArtwork(
-        kind: StateIllustrationKind.notFound,
-        label: caption ?? strings.noPhoto,
-        showLabel: showStateLabel,
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // The API serves photos far larger than any frame the app shows (up
+        // to ~3100 px wide): decoding one at full size costs tens of
+        // megabytes, and a few such photos can evict the whole image cache,
+        // which re-downloads them on every scroll back. Decoding at the
+        // displayed size keeps photos cached across the scroll and saves
+        // bandwidth. The resize never upscales, so a frame wider than the
+        // original (the full-screen viewer with its medium-size photos)
+        // keeps the original size.
+        final maxWidth = constraints.maxWidth;
+        final cacheWidth = maxWidth.isFinite
+            ? (maxWidth * MediaQuery.devicePixelRatioOf(context)).round()
+            : null;
+        return Image.network(
+          imageUrl,
+          fit: fit,
+          cacheWidth: cacheWidth,
+          width: double.infinity,
+          height: double.infinity,
+          semanticLabel: label,
+          // The Cat API serves images from cdn2.thecatapi.com, which sends no
+          // CORS headers. Preferring an HTML element prevents one blocked XHR
+          // per photo.
+          webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+          loadingBuilder: (context, child, progress) => progress == null
+              ? child
+              : _PhotoStateArtwork(
+                  kind: StateIllustrationKind.loading,
+                  label: strings.loadingCats,
+                  showLabel: showStateLabel,
+                ),
+          errorBuilder: (context, error, stackTrace) => _PhotoStateArtwork(
+            kind: StateIllustrationKind.notFound,
+            label: caption ?? strings.noPhoto,
+            showLabel: showStateLabel,
+          ),
+        );
+      },
     );
   }
 }

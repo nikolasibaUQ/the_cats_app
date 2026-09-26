@@ -203,6 +203,14 @@ from the frame constraints and keep localized copy in Flutter. Because every
 card, detail gallery, and full-screen viewer uses this widget, the states remain
 consistent throughout the app.
 
+The API serves photos far larger than any frame the app shows (the live list
+reaches ~3100 px wide), and decoding them at full size lets a few photos evict
+the whole image cache, so scrolling back re-downloads them. `AppRemoteImage`
+therefore decodes each photo at its displayed size: `cacheWidth` is derived
+from the layout constraints and the device pixel ratio. The bounded decode
+keeps photos cached across the scroll, and the resize never upscales, so the
+full-screen viewer keeps each photo's original size.
+
 Error text should be understandable without exposing HTTP or Dio details.
 Keep content visible during refresh when practical. Use the shared
 `Responsive` helper for bounded spacing, icons, and viewport measurements.
