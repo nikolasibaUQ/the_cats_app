@@ -102,8 +102,10 @@ class _BreedDetailHeroState extends State<BreedDetailHero> {
                   bottom: responsive.spacing(12),
                   child: _HeroLabel(
                     label: widget.breed.id.toUpperCase(),
-                    background: colors.primary.withValues(alpha: 0.88),
-                    foreground: colors.onPrimary,
+                    // Amber is the one brand accent that competes with nothing
+                    // else on the photo, so the code badge stands out calmly.
+                    background: colors.tertiary.withValues(alpha: 0.94),
+                    foreground: colors.onTertiary,
                   ),
                 ),
               ],
@@ -115,7 +117,8 @@ class _BreedDetailHeroState extends State<BreedDetailHero> {
   }
 }
 
-/// Short label on a translucent surface, used over the breed photo.
+/// Amber badge that identifies the breed code over its photo, giving the
+/// gallery a single flash of the brand accent.
 class _HeroLabel extends StatelessWidget {
   const _HeroLabel({
     required this.label,

@@ -27,7 +27,7 @@ class BreedsHeader extends StatelessWidget {
             context,
           ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: responsive.spacing(8)),
+        SizedBox(height: responsive.spacing(3)),
         Text(
           strings.intro,
           style: Theme.of(

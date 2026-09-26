@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_locale_controller.dart';
 import '../../../app/app_routes.dart';
+import '../../../app/app_theme.dart';
 import '../../../domain/entities/breed.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/widgets.dart';
@@ -63,6 +64,9 @@ class BreedDetailScreen extends ConsumerWidget {
                   onSelected: selectLanguage,
                 ),
               ],
+              flexibleSpace: const DecoratedBox(
+                decoration: BoxDecoration(gradient: AppTheme.appBarGradient),
+              ),
             )
           : null,
       body: breed.when(

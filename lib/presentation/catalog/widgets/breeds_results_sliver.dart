@@ -100,16 +100,27 @@ class BreedsResultsSliver extends StatelessWidget {
           SliverPadding(
             padding: EdgeInsets.fromLTRB(
               responsive.pagePadding,
-              responsive.spacing(20),
+              responsive.spacing(24),
               responsive.pagePadding,
               0,
             ),
             sliver: SliverToBoxAdapter(
               child: Center(
-                child: OutlinedButton(
+                child: FilledButton.icon(
                   key: const Key('show-more-breeds'),
                   onPressed: onShowMore,
-                  child: Text(strings.showMoreBreeds),
+                  icon: const Icon(Icons.expand_more_rounded),
+                  iconAlignment: IconAlignment.end,
+                  label: Text(strings.showMoreBreeds),
+                  style: FilledButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: responsive.spacing(28),
+                      vertical: responsive.spacing(14),
+                    ),
+                    textStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ),

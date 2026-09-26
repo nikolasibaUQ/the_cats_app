@@ -45,13 +45,37 @@ class SplashScreen extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Flexible(
-                      child: Image.asset(
-                        'assets/images/splash_image.png',
+                      child: SizedBox(
                         width: artworkSize,
                         height: artworkSize,
-                        fit: BoxFit.contain,
-                        filterQuality: FilterQuality.high,
-                        semanticLabel: strings.openingApp,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // A soft glow in the brand accents gives the entry
+                            // screen presence without adding motion or noise.
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    colors.tertiary.withValues(alpha: 0.35),
+                                    colors.primary.withValues(alpha: 0.20),
+                                    Colors.transparent,
+                                  ],
+                                  stops: const [0.0, 0.55, 1.0],
+                                ),
+                              ),
+                            ),
+                            Image.asset(
+                              'assets/images/splash_image.png',
+                              width: artworkSize,
+                              height: artworkSize,
+                              fit: BoxFit.contain,
+                              filterQuality: FilterQuality.high,
+                              semanticLabel: strings.openingApp,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: responsive.spacing(24)),

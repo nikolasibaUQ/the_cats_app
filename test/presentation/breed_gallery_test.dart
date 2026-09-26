@@ -104,7 +104,7 @@ void main() {
     expect(tester.widget<IconButton>(next).onPressed, isNull);
   });
 
-  testWidgets('uses terracotta pager controls on compact layouts', (
+  testWidgets('uses purple brand pager controls on compact layouts', (
     tester,
   ) async {
     await tester.pumpWidget(

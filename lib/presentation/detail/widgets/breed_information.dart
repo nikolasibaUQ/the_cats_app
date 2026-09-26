@@ -183,7 +183,8 @@ class _FactGrid extends StatelessWidget {
   }
 }
 
-/// Outlined pill for single-word breed qualities such as temperament words.
+/// Fuchsia-tinted pill for single-word breed qualities such as temperament
+/// words, adding a playful accent without competing with the photos.
 class _QualityChip extends StatelessWidget {
   const _QualityChip({required this.label});
 
@@ -191,11 +192,16 @@ class _QualityChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Chip(
       label: Text(label),
-      backgroundColor: colors.surfaceContainer,
-      side: BorderSide(color: colors.outlineVariant),
+      backgroundColor: colors.secondaryContainer,
+      side: BorderSide(color: colors.secondary),
+      labelStyle: theme.textTheme.labelLarge?.copyWith(
+        color: colors.onSecondaryContainer,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 }

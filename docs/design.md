@@ -2,21 +2,26 @@
 
 ## Objective
 
-The app lets users explore cat breeds in a clean, calm, warm interface. Follow
-approved visual references when they exist. Keep layouts readable on Flutter
-Web and common mobile widths; use a sensible maximum content width on large
-screens. Avoid visual noise, excessive gradients, shadows, and animation.
+The app lets users explore cat breeds in a clean, vivid interface built on the
+Pragma brand palette. Follow approved visual references when they exist. Keep
+layouts readable on Flutter Web and common mobile widths; use a sensible
+maximum content width on large screens. Avoid visual noise; gradients, shadows,
+and motion appear only where they reinforce the brand direction.
 
-The visual tokens are deliberate: soft terracotta (`#D9A08A`) marks selected and
-primary actions; cream (`#FAF8F5`) is the scaffold; white (`#FFFFFF`) raises
-cards; charcoal (`#252525`) and warm gray (`#6F6B67`) carry text; and pale
-cream (`#F3EDE5`) supports neutral states. Do not introduce literal black,
-white, or seed-derived accent colors where an equivalent `ColorScheme` token
-exists.
+The visual tokens are deliberate, taken from the Pragma design system: vivid
+purple (`#6429CD`) marks selected and primary actions; deep purple (`#330072`)
+opens the navigation gradient; cool gray (`#F6F7FC`) is the scaffold; white
+(`#FFFFFF`) raises cards; near-black (`#0C0C0D`) and gray (`#666669`) carry
+text; and pale gray (`#E8E8ED`) supports neutral states. Fuchsia (`#DD52DD`)
+tints playful accents such as the temperament pills, and amber (`#F8A53C`)
+marks the few elements that deserve a flash of color: the breed code badge and
+the splash glow. Do not introduce literal black, white, or seed-derived accent
+colors where an equivalent `ColorScheme` token exists.
 
-The catalog and compact-detail AppBars use terracotta with charcoal foreground
-content, giving navigation a stable brand accent. Content remains cream and
-white, while a focused search field uses the same terracotta outline.
+The catalog and compact-detail AppBars paint the brand gradient from deep
+purple to vivid purple with white foreground content, giving navigation a
+stable brand accent. Content remains gray and white, while a focused search
+field uses the same purple outline.
 
 The interface supports Spanish and English. It follows the device language by
 default and offers an in-app selector for either language or the system setting.
@@ -45,7 +50,8 @@ waits for, starts, or blocks an API request.
 The splash artwork is the bundled `assets/images/splash_image.png`, a square
 illustration that grows with the viewport up to a comfortable size and gives
 up room before the title and subtitle do, so it stays proportional on any
-resolution without overflowing short screens.
+resolution without overflowing short screens. A soft radial glow in the brand
+purple and amber sits behind the artwork.
 
 ## Breeds
 
@@ -68,11 +74,13 @@ distinct from an empty API response. Selecting a card opens `/breeds/:id`.
 The API list is loaded once, but the screen initially renders eight matching
 breeds and reveals eight more through an explicit action. This limits the
 initial scroll without hiding matches from local search or generating another
-network request.
+network request. The reveal control is a solid purple button with a downward
+arrow, so the action stands out among the white cards.
 
 Each card shows the breed name and its country of origin, as the approved
 design shows. The same card is reused for the suggestions on detail, where
-only the identifying information belongs.
+only the identifying information belongs. On pointer devices the card lifts
+with a brand-tinted shadow and purple border while hovered.
 
 The heading and search field remain fixed while the result area scrolls. This
 keeps the active query visible and avoids making the user scroll to the top to
@@ -93,12 +101,12 @@ a photo or the expand control opens a full-screen viewer. A gallery error offers
 its own retry and must not replace otherwise usable breed information.
 
 On compact layouts, an AppBar carries the back action and language selector;
-the photo holds only gallery controls and the breed code. Its pager controls
-use terracotta surfaces with charcoal icons; disabled controls use the pale cream
-neutral. On desktop, a contextual toolbar above the two-column layout holds
-the labeled back action on the left and the labeled language selector on the
-right. Screen controls never float above the photo, leaving it for gallery
-controls and the breed code only.
+the photo holds only gallery controls and the amber breed code badge. Its
+pager controls use purple surfaces with white icons; disabled controls use the
+pale gray neutral. On desktop, a contextual toolbar above the two-column
+layout holds the labeled back action on the left and the labeled language
+selector on the right. Screen controls never float above the photo, leaving it
+for gallery controls and the breed code only.
 
 The area frames each photo with its own proportion, bounded between 3:4 and 3:2
 and by the space the layout offers, so a landscape photo is not zoomed into a
@@ -112,7 +120,7 @@ breed name moves to the AppBar and is not repeated below the photo:
 - overview cards for origin, breed group, life span, weight, and height;
 - description;
 - history;
-- temperament words as outlined pills;
+- temperament words as fuchsia-tinted pills;
 - suggested breeds, with a counter for those left out and desktop previous/next
   controls;
 - the Wikipedia article.

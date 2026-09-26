@@ -221,7 +221,7 @@ class _BreedGalleryState extends State<BreedGallery> {
 }
 
 /// Keeps photo paging legible without making it resemble a screen action on
-/// compact layouts. The terracotta treatment retains the app's visual
+/// compact layouts. The purple brand treatment retains the app's visual
 /// direction; wide layouts retain the light overlay treatment.
 class _GalleryPagerButton extends StatelessWidget {
   const _GalleryPagerButton({

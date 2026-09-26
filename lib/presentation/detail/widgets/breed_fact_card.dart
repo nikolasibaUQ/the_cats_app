@@ -39,7 +39,20 @@ class BreedFactCard extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: responsive.icon(16), color: colors.primary),
+              // The icon sits in a soft purple tile so the overview reads as a
+              // unit of brand-tinted badges instead of three text lines.
+              Container(
+                padding: EdgeInsets.all(responsive.spacing(7)),
+                decoration: BoxDecoration(
+                  color: colors.primaryContainer,
+                  borderRadius: BorderRadius.circular(responsive.radius(10)),
+                ),
+                child: Icon(
+                  icon,
+                  size: responsive.icon(16),
+                  color: colors.onPrimaryContainer,
+                ),
+              ),
               SizedBox(width: responsive.spacing(6)),
               Flexible(
                 child: Text(
