@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../data/repositories/breeds_repository_impl.dart';
+import '../data/sources/breed_reference_source.dart';
 import '../data/sources/breeds_remote_data_source.dart';
 import '../domain/repositories/breeds_repository.dart';
 
@@ -15,5 +16,8 @@ part 'breeds_dependencies.g.dart';
 BreedsRepository breedsRepository(Ref ref) {
   final dataSource = DioBreedsRemoteDataSource();
   ref.onDispose(dataSource.close);
-  return BreedsRepositoryImpl(remoteDataSource: dataSource);
+  return BreedsRepositoryImpl(
+    remoteDataSource: dataSource,
+    referenceSource: BreedReferenceSource(),
+  );
 }

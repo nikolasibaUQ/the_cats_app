@@ -4,7 +4,6 @@ import '../../../di/breeds_dependencies.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/policies/breed_gallery.dart';
 import '../../breeds_providers.dart';
-
 part 'breed_detail_providers.g.dart';
 
 /// Breed selected by the route ID, resolved from the cached list so a direct
@@ -16,6 +15,17 @@ Future<Breed?> breedById(Ref ref, String breedId) async {
     if (breed.id == breedId) return breed;
   }
   return null;
+}
+
+/// Traits of the selected breed from the bundled reference dataset.
+///
+/// Reading through `.value` keeps the detail usable when the dataset is still
+/// loading or failed to read: the trait sections simply stay hidden instead of
+/// replacing breed information the API already supplied.
+@riverpod
+BreedReference? breedReference(Ref ref, String breedId) {
+  final references = ref.watch(breedReferencesProvider).value;
+  return references?[breedId];
 }
 
 /// Additional photos requested for the selected breed.

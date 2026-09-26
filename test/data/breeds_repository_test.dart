@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/data/repositories/breeds_repository_impl.dart';
+import 'package:the_cats_app/data/sources/breed_reference_source.dart';
 import 'package:the_cats_app/data/sources/breeds_remote_data_source.dart';
+import 'package:the_cats_app/domain/entities/breed_reference.dart';
 
 Dio dioReturning(List<Map<String, Object?>> data) {
   final dio = Dio();
@@ -14,6 +18,9 @@ Dio dioReturning(List<Map<String, Object?>> data) {
   );
   return dio;
 }
+
+BreedReferenceSource referenceSourceReturning(Map<String, Object?> json) =>
+    BreedReferenceSource(loadAsset: (_) async => jsonEncode(json));
 
 void main() {
   test('maps the breeds response into domain data', () async {
@@ -28,6 +35,7 @@ void main() {
 
     final breeds = await BreedsRepositoryImpl(
       remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
+      referenceSource: referenceSourceReturning(const {'breeds': {}}),
     ).getBreeds();
 
     expect(breeds, hasLength(1));
@@ -60,6 +68,7 @@ void main() {
 
     final breeds = await BreedsRepositoryImpl(
       remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
+      referenceSource: referenceSourceReturning(const {'breeds': {}}),
     ).getBreeds();
 
     // The detail photo area frames the photo with this proportion.
@@ -85,6 +94,7 @@ void main() {
     ]);
     final breeds = await BreedsRepositoryImpl(
       remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
+      referenceSource: referenceSourceReturning(const {'breeds': {}}),
     ).getBreeds();
 
     expect(breeds.single.breedGroup, isNull);
@@ -124,11 +134,43 @@ void main() {
 
     final photos = await BreedsRepositoryImpl(
       remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
+      referenceSource: referenceSourceReturning(const {'breeds': {}}),
     ).getBreedPhotos('beng', limit: 6);
 
     expect(capturedRequest?.path, '/images/search');
     expect(capturedRequest?.queryParameters['breed_ids'], 'beng');
     expect(capturedRequest?.queryParameters['limit'], 6);
     expect(photos.single.id, 'photo-1');
+  });
+
+  test('maps the bundled reference dataset into domain data', () async {
+    final dio = dioReturning(const []);
+
+    final references = await BreedsRepositoryImpl(
+      remoteDataSource: DioBreedsRemoteDataSource(dio: dio),
+      referenceSource: referenceSourceReturning({
+        'breeds': {
+          'beng': {
+            'energy_level': 5,
+            'affection_level': 4,
+            'intelligence': 5,
+            'grooming': 1,
+            'social_needs': 3,
+            'hypoallergenic': false,
+            'rare': false,
+            'lap': true,
+          },
+        },
+      }),
+    ).getBreedReferences();
+
+    expect(references, hasLength(1));
+    final beng = references['beng']!;
+    expect(beng, isA<BreedReference>());
+    expect(beng.energyLevel, 5);
+    expect(beng.grooming, 1);
+    expect(beng.hypoallergenic, isFalse);
+    expect(beng.rare, isFalse);
+    expect(beng.lap, isTrue);
   });
 }

@@ -56,7 +56,9 @@ jobs:
           path: coverage/lcov.info
 
       # Validates the same production artifact the Docker image builds.
-      # The demo key in .env.example is public and safe for CI.
+      # The demo key in .env.example is public and safe for CI. The Web build
+      # deliberately never uses the private key: the value would be embedded
+      # in the public bundle any user's browser downloads.
       - name: Build web (release)
         run: flutter build web --release --dart-define-from-file=.env.example
 
@@ -90,8 +92,19 @@ jobs:
       # The keystore is gitignored, so release builds fall back to the debug
       # signing config in app/build.gradle.kts. The artifact is installable,
       # but it is not a Play Store release APK.
+      #
+      # The repository secret CAT_API_KEY supplies the real API key to the
+      # mobile binary. Pull requests from forks do not receive secrets, so
+      # the build falls back to the public demo key there.
       - name: Build release APK
-        run: flutter build apk --release --dart-define-from-file=.env.example
+        env:
+          CAT_API_KEY: ${{ secrets.CAT_API_KEY }}
+        run: |
+          if [ -n "$CAT_API_KEY" ]; then
+            flutter build apk --release --dart-define=CAT_API_KEY="$CAT_API_KEY"
+          else
+            flutter build apk --release --dart-define-from-file=.env.example
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

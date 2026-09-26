@@ -32,6 +32,8 @@
   recoverable error states.
 - 🖼️ Detail route, gallery, responsive layouts, and intentional
   missing/loading-image states.
+- 🧮 Trait boards on detail: five 1–5 scales and three yes/no traits read from
+  a bundled local dataset.
 - 🧱 Layered structure with Riverpod, Dio, GoRouter, DTO-to-entity mapping,
   and tests across Data, Domain, and Presentation.
 
@@ -50,9 +52,13 @@ cp .env.example .env
 flutter run -d chrome --dart-define-from-file=.env
 ```
 
-`CAT_API_KEY` is build-time configuration, not a secret in a Flutter Web
-application. Use only a public/demo key in this client-only project. See the
-[API guide](docs/api.md#credentials-and-failures) for the rationale.
+`CAT_API_KEY` is build-time configuration. Local development and the Web build
+use the public demo key in `.env.example`; the CI Android build reads the real
+key from the repository secret `CAT_API_KEY` (see the [CI guide](docs/ci.md)
+and the [API guide](docs/api.md#credentials-and-failures)). Any key compiled
+into a Web bundle is visible to every visitor, so the private key never
+reaches the Web build; a client-only app cannot hide a key from its own
+binary.
 
 ## ✅ Verify
 
@@ -82,5 +88,7 @@ Run code generation again after changing Riverpod annotations or JSON models.
 - A direct detail link first loads the breed list, then resolves its ID.
 - A selected breed loads up to eight gallery photos; its details remain usable
   if that request fails.
-- The free API plan does not supply ratings, traits, alternative names, or a
-  Wikipedia URL, so the app deliberately does not model or render them.
+- The free API plan no longer returns the 1–5 ratings or the binary traits, so
+  the detail completes five ratings and three yes/no traits from a bundled
+  dataset captured from the API before the change; alternative names and the
+  Wikipedia URL stay unmapped (the article action opens a Wikipedia search).

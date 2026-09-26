@@ -54,6 +54,26 @@
   "descriptionTitle": "Descripción",
   "historyTitle": "Historia",
   "temperament": "Temperamento",
+  "characteristics": "Características",
+  "traitsTitle": "Rasgos",
+  "intelligence": "Inteligencia",
+  "energy": "Energía",
+  "affection": "Afecto",
+  "groomingNeeds": "Necesidades de aseo",
+  "socialNeeds": "Necesidades sociales",
+  "hypoallergenic": "Hipoalergénico",
+  "rare": "Raza rara",
+  "lap": "Gato faldero",
+  "yesValue": "Sí",
+  "noValue": "No",
+  "ratingValue": "{value} de 5",
+  "@ratingValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "lifeSpan": "Esperanza de vida",
   "lifeSpanValue": "{years} años",
   "@lifeSpanValue": {

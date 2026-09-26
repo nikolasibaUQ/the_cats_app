@@ -3,11 +3,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/di/breeds_dependencies.dart';
 import 'package:the_cats_app/domain/entities/breed.dart';
 import 'package:the_cats_app/domain/entities/breed_photo.dart';
+import 'package:the_cats_app/domain/entities/breed_reference.dart';
 import 'package:the_cats_app/domain/policies/breed_gallery.dart';
 import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
+import 'package:the_cats_app/presentation/breeds_providers.dart';
 import 'package:the_cats_app/presentation/detail/providers/breed_detail_providers.dart';
 
 const String _primaryImage = 'https://example.com/beng.jpg';
+
+const BreedReference _bengReference = BreedReference(
+  energyLevel: 5,
+  affectionLevel: 4,
+  intelligence: 5,
+  grooming: 1,
+  socialNeeds: 3,
+  hypoallergenic: false,
+  rare: false,
+  lap: true,
+);
 
 class _FailingPhotosRepository implements BreedsRepository {
   @override
@@ -24,6 +37,11 @@ class _FailingPhotosRepository implements BreedsRepository {
   @override
   Future<List<BreedPhoto>> getBreedPhotos(String breedId, {int limit = 8}) =>
       Future<List<BreedPhoto>>.error(Exception('Gallery unavailable'));
+
+  @override
+  Future<Map<String, BreedReference>> getBreedReferences() async => const {
+    'beng': _bengReference,
+  };
 }
 
 void main() {
@@ -60,4 +78,11 @@ void main() {
       ]);
     },
   );
+
+  test('resolves the breed traits from the bundled dataset', () async {
+    await container.read(breedReferencesProvider.future);
+
+    expect(container.read(breedReferenceProvider('beng')), _bengReference);
+    expect(container.read(breedReferenceProvider('missing')), isNull);
+  });
 }

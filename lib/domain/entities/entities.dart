@@ -3,3 +3,4 @@ library;
 
 export 'breed.dart';
 export 'breed_photo.dart';
+export 'breed_reference.dart';

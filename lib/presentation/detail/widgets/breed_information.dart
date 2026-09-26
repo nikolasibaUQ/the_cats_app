@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/breed.dart';
+import '../../../domain/entities/breed_reference.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/widgets.dart';
@@ -13,6 +14,7 @@ class BreedInformation extends StatelessWidget {
     super.key,
     required this.breed,
     this.showName = true,
+    this.reference,
   });
 
   final Breed breed;
@@ -20,6 +22,10 @@ class BreedInformation extends StatelessWidget {
   /// The compact detail app bar already shows this name, so its content avoids
   /// repeating the same heading below the photo.
   final bool showName;
+
+  /// Traits of the bundled dataset for this breed. When absent, the two trait
+  /// sections stay hidden without affecting the rest of the information.
+  final BreedReference? reference;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +44,18 @@ class BreedInformation extends StatelessWidget {
       imperial: strings.heightImperialValue,
     );
     final temperament = _split(breed.temperament);
+    final ratings = <(String, int?)>[
+      (strings.intelligence, reference?.intelligence),
+      (strings.energy, reference?.energyLevel),
+      (strings.affection, reference?.affectionLevel),
+      (strings.groomingNeeds, reference?.grooming),
+      (strings.socialNeeds, reference?.socialNeeds),
+    ].where((rating) => rating.$2 != null).toList();
+    final traits = <(String, bool?)>[
+      (strings.hypoallergenic, reference?.hypoallergenic),
+      (strings.rare, reference?.rare),
+      (strings.lap, reference?.lap),
+    ].where((trait) => trait.$2 != null).toList();
     final facts = <Widget>[
       if (breed.origin != null)
         BreedFactCard(
@@ -112,6 +130,36 @@ class BreedInformation extends StatelessWidget {
             ),
           ),
         ],
+        if (ratings.isNotEmpty) ...[
+          SizedBox(height: responsive.spacing(28)),
+          SectionTitle(strings.characteristics),
+          SizedBox(height: responsive.spacing(12)),
+          SectionPanel(
+            child: Column(
+              children: [
+                for (final (index, rating) in ratings.indexed) ...[
+                  if (index > 0) const Divider(height: 24),
+                  _TraitRating(label: rating.$1, value: rating.$2!),
+                ],
+              ],
+            ),
+          ),
+        ],
+        if (traits.isNotEmpty) ...[
+          SizedBox(height: responsive.spacing(28)),
+          SectionTitle(strings.traitsTitle),
+          SizedBox(height: responsive.spacing(12)),
+          SectionPanel(
+            child: Column(
+              children: [
+                for (final (index, trait) in traits.indexed) ...[
+                  if (index > 0) const Divider(height: 24),
+                  _TraitFlag(label: trait.$1, value: trait.$2!),
+                ],
+              ],
+            ),
+          ),
+        ],
         if (temperament.isNotEmpty) ...[
           SizedBox(height: responsive.spacing(28)),
           SectionTitle(strings.temperament),
@@ -179,6 +227,63 @@ class _FactGrid extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// One 1-to-5 trait row: the label reads the dots that measure it.
+class _TraitRating extends StatelessWidget {
+  const _TraitRating({required this.label, required this.value});
+
+  final String label;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Expanded(child: Text(label)),
+      RatingDots(value: value, semanticLabel: label),
+    ],
+  );
+}
+
+/// One binary trait row: true reads as a filled check with "yes", false as a
+/// muted mark with "no", so both states stay explicit.
+class _TraitFlag extends StatelessWidget {
+  const _TraitFlag({required this.label, required this.value});
+
+  final String label;
+  final bool value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final responsive = Responsive.of(context);
+    final strings = AppLocalizations.of(context)!;
+    final answer = value ? strings.yesValue : strings.noValue;
+    return Semantics(
+      label: '$label: $answer',
+      child: ExcludeSemantics(
+        child: Row(
+          children: [
+            Expanded(child: Text(label)),
+            Icon(
+              value ? Icons.check_circle_rounded : Icons.cancel_outlined,
+              size: responsive.icon(20),
+              color: value ? colors.primary : colors.outline,
+            ),
+            SizedBox(width: responsive.spacing(8)),
+            Text(
+              answer,
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: value ? colors.primary : colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

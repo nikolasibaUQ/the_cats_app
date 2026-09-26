@@ -52,10 +52,12 @@ The free-plan response **does not** contain the numeric trait ratings
 (`adaptability`, `affection_level`, …, `vocalisation`), `alt_names`,
 `wikipedia_url`, or the binary trait flags (`indoor`, `lap`, …,
 `experimental`), even though the public documentation still describes them.
-Those fields are deliberately not mapped anywhere: the plan that actually
-serves this app can never return them, so the DTO, the entity, and the UI
-carry no code for them. Should the plan change or a richer key be adopted,
-map each field at the Data boundary instead of inventing values.
+The application therefore completes the ratings and traits from
+`assets/breed_reference.json`, a bundled dataset captured from this same API
+before the free plan stopped serving those fields (see
+[Ratings and the bundled reference dataset](#ratings-and-the-bundled-reference-dataset)).
+`alt_names` and `wikipedia_url` stay unmapped: the article action always opens
+a Wikipedia search for the breed name.
 
 ## Product fields
 
@@ -77,21 +79,41 @@ failure or missing URL must not fail the whole view. The additional image
 request supplies the detail carousel and is never performed for list cards.
 
 Fields such as `country_code`, `cfa_url`, `vetstreet_url`, `vcahospitals_url`,
-`venom_codes`, `reference_image_id`, the 1–5 ratings, `alt_names`,
-`wikipedia_url`, and the binary trait flags stay unmapped: the origin already
-expresses the country in readable form, the remaining links duplicate what the
-article button offers, and the free plan never returns the other fields, so
-mapping them would add code for values nothing can ever render.
+`venom_codes`, `reference_image_id`, `alt_names`, and `wikipedia_url` stay
+unmapped: the origin already expresses the country in readable form, the
+remaining links duplicate what the article button offers, and the free plan
+never returns the others, so mapping them would add code for values nothing
+can ever render. The 1–5 ratings and the binary trait flags are the exception:
+they come from the bundled reference dataset described below.
 
-## Ratings and other paid fields
+## Ratings and the bundled reference dataset
 
 The public documentation still describes the 1–5 ratings (`adaptability`,
 `affection_level`, `energy_level`, `grooming`, `health_issues`,
 `intelligence`, `shedding_level`, `social_needs`, `vocalisation`, and the
-friendly levels), the binary trait flags, `alt_names`, and `wikipedia_url`.
-The free-plan response verified above returns none of them, so the app maps
-and renders none of them. A rating the API never sends cannot be displayed
-faithfully, and inventing one would misrepresent the breed.
+friendly levels) and the binary trait flags. The free-plan response verified
+above returns none of them. Instead of inventing values per breed, the
+application ships `assets/breed_reference.json`, a dataset captured from this
+same API on 2026-09-22, before the free plan stopped serving those fields.
+The file records its `source` and `capturedAt`, and `docs/api.md` (this
+document) explains why it exists.
+
+The trial scope maps a focused set per breed: five ratings
+(`energy_level`, `affection_level`, `intelligence`, `grooming`,
+`social_needs`) and three binary traits (`hypoallergenic`, `rare`, `lap`),
+stated explicitly as true or false. Entries for breeds the historic capture
+does not include (the API listed 107 breeds on 2026-09-25 against 67 captured
+ones) are curated from the closest related breed and carry
+`"estimated": true` in the file, so a reader can tell a captured measurement
+from a curated estimate. A value from a live API response always takes
+precedence over the dataset; the free plan currently supplies none of these
+fields, so no conflict can arise. Should the plan change or a richer key be
+adopted, map each field at the Data boundary and keep the live value first.
+
+The dataset is read once per application run through
+`BreedReferenceSource`; the detail screens hide the two trait sections when a
+breed has no entry, so a missing reference never replaces breed information
+the API already supplied.
 
 ## Weight and height
 
@@ -115,9 +137,17 @@ silently.
 
 Browser-delivered configuration, including values from `.env` passed through
 `--dart-define-from-file`, is visible to users. Ignoring `.env` protects the
-repository, not the compiled Web app. Do not commit a private credential or
-describe a client-side key as secret. A private key requires server-side
-handling and access controls.
+repository, not the compiled Web app. For the same reason the Web build never
+receives the private key: it keeps the public demo key, because anything
+compiled into a Web bundle is readable by every visitor.
+
+The Android build is the one place the private key is used. CI reads it from
+the repository secret `CAT_API_KEY` and injects it into the APK at build time
+with `--dart-define` (see [CI](ci.md#api-key)); pull requests from forks fall
+back to the demo key. A compiled APK can still be inspected like any client
+binary, so the secret protects the repository, not the installed artifact.
+Only a server-side proxy can keep a key entirely off a client; this
+client-only application accepts the trade-off for the mobile build.
 
 Map timeouts, connection failures, unexpected responses, and malformed data
 to usable application states. User-facing messages must not contain Dio

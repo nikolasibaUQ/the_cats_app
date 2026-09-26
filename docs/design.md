@@ -120,6 +120,8 @@ breed name moves to the AppBar and is not repeated below the photo:
 - overview cards for origin, breed group, life span, weight, and height;
 - description;
 - history;
+- characteristics of the bundled reference dataset as 1-to-5 dot rows;
+- binary traits of that dataset as labeled yes/no rows;
 - temperament words as fuchsia-tinted pills;
 - suggested breeds, with a counter for those left out and desktop previous/next
   controls;
@@ -131,6 +133,13 @@ photo area does not carry an origin label. The header's weight chip, the
 origin-and-life-span summary line, and the closing "back to all breeds" button
 were removed for the same reason: the photo controls already leave the detail,
 and the suggestions row already offers the catalog.
+
+The trait sections come from the bundled reference dataset (see
+`docs/api.md`): a breed without an entry simply omits both sections. Each
+rating renders as a row whose label reads five dots, filled up to the value;
+each binary trait renders as a row that states the label plus an explicit
+localized yes or no, so a false value stays visible instead of appearing
+absent.
 
 Overview cards use three columns only when each card remains at least 180 px
 wide; otherwise they use two columns. Labels and values wrap rather than being

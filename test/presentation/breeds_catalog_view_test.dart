@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/di/breeds_dependencies.dart';
 import 'package:the_cats_app/domain/entities/breed.dart';
 import 'package:the_cats_app/domain/entities/breed_photo.dart';
+import 'package:the_cats_app/domain/entities/breed_reference.dart';
 import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/breeds_providers.dart';
 import 'package:the_cats_app/presentation/catalog/controllers/breeds_catalog_controller.dart';
@@ -26,6 +27,9 @@ class _CatalogRepository implements BreedsRepository {
     String breedId, {
     int limit = 8,
   }) async => const <BreedPhoto>[];
+
+  @override
+  Future<Map<String, BreedReference>> getBreedReferences() async => const {};
 }
 
 void main() {

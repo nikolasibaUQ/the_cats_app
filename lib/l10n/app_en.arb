@@ -54,6 +54,26 @@
   "descriptionTitle": "Description",
   "historyTitle": "History",
   "temperament": "Temperament",
+  "characteristics": "Characteristics",
+  "traitsTitle": "Traits",
+  "intelligence": "Intelligence",
+  "energy": "Energy",
+  "affection": "Affection",
+  "groomingNeeds": "Grooming needs",
+  "socialNeeds": "Social needs",
+  "hypoallergenic": "Hypoallergenic",
+  "rare": "Rare breed",
+  "lap": "Lap cat",
+  "yesValue": "Yes",
+  "noValue": "No",
+  "ratingValue": "{value} of 5",
+  "@ratingValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "lifeSpan": "Life span",
   "lifeSpanValue": "{years} years",
   "@lifeSpanValue": {

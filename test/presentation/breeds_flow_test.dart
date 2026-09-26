@@ -6,6 +6,7 @@ import 'package:the_cats_app/app/cats_app.dart';
 import 'package:the_cats_app/di/breeds_dependencies.dart';
 import 'package:the_cats_app/domain/entities/breed.dart';
 import 'package:the_cats_app/domain/entities/breed_photo.dart';
+import 'package:the_cats_app/domain/entities/breed_reference.dart';
 import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/detail/widgets/breed_gallery.dart';
 import 'package:the_cats_app/presentation/photo_framing.dart';
@@ -45,6 +46,9 @@ class _FakeBreedsRepository implements BreedsRepository {
     String breedId, {
     int limit = 8,
   }) async => const [];
+
+  @override
+  Future<Map<String, BreedReference>> getBreedReferences() async => const {};
 }
 
 class _ManyBreedsRepository implements BreedsRepository {
@@ -64,6 +68,9 @@ class _ManyBreedsRepository implements BreedsRepository {
     String breedId, {
     int limit = 8,
   }) async => const [];
+
+  @override
+  Future<Map<String, BreedReference>> getBreedReferences() async => const {};
 }
 
 /// Breeds shaped like the free-plan live response: only the factual fields.
@@ -91,6 +98,9 @@ class _LiveShapeRepository implements BreedsRepository {
     String breedId, {
     int limit = 8,
   }) async => const [];
+
+  @override
+  Future<Map<String, BreedReference>> getBreedReferences() async => const {};
 }
 
 class _GalleryFailureRepository extends _FakeBreedsRepository {
@@ -116,6 +126,9 @@ class _RetryingBreedsRepository implements BreedsRepository {
     String breedId, {
     int limit = 8,
   }) async => const <BreedPhoto>[];
+
+  @override
+  Future<Map<String, BreedReference>> getBreedReferences() async => const {};
 }
 
 class _FailOnceBreedsRepository implements BreedsRepository {
@@ -133,6 +146,9 @@ class _FailOnceBreedsRepository implements BreedsRepository {
     String breedId, {
     int limit = 8,
   }) async => const <BreedPhoto>[];
+
+  @override
+  Future<Map<String, BreedReference>> getBreedReferences() async => const {};
 }
 
 /// Breed whose primary photo is landscape while the gallery also holds a
@@ -161,6 +177,23 @@ class _MixedPhotoShapeRepository extends _FakeBreedsRepository {
       height: 1200,
     ),
   ];
+}
+
+/// Supplies a reference entry so the trait sections render end to end.
+class _ReferenceBreedsRepository extends _FakeBreedsRepository {
+  @override
+  Future<Map<String, BreedReference>> getBreedReferences() async => const {
+    'beng': BreedReference(
+      energyLevel: 5,
+      affectionLevel: 4,
+      intelligence: 5,
+      grooming: 1,
+      socialNeeds: 3,
+      hypoallergenic: false,
+      rare: false,
+      lap: true,
+    ),
+  };
 }
 
 /// Proportion of the photo area drawn on screen.
@@ -441,6 +474,43 @@ void main() {
       );
       expect(find.text(label), findsOneWidget);
     }
+  });
+
+  testWidgets('detail completes ratings and traits from the dataset', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.binding.setSurfaceSize(const Size(480, 900));
+    await pumpApp(
+      tester,
+      repository: _ReferenceBreedsRepository(),
+      location: '/breeds/beng',
+    );
+    await tester.pumpAndSettle();
+
+    // The reference only adds the trait sections: the API facts stay untouched.
+    for (final label in const [
+      'CHARACTERISTICS',
+      'Intelligence',
+      'Energy',
+      'Affection',
+      'Grooming needs',
+      'Social needs',
+      'TRAITS',
+      'Hypoallergenic',
+      'Rare breed',
+      'Lap cat',
+    ]) {
+      await tester.scrollUntilVisible(
+        find.text(label),
+        300,
+        scrollable: detailScrollable(),
+      );
+      expect(find.text(label), findsOneWidget);
+    }
+    // Both binary states stay explicit: one yes and two no.
+    expect(find.text('Yes'), findsOneWidget);
+    expect(find.text('No'), findsNWidgets(2));
   });
 
   testWidgets('a related breed replaces detail without stacking navigation', (

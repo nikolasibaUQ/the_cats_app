@@ -1,12 +1,17 @@
 import '../../domain/entities/entities.dart';
 import '../../domain/repositories/breeds_repository.dart';
+import '../sources/breed_reference_source.dart';
 import '../sources/breeds_remote_data_source.dart';
 
 class BreedsRepositoryImpl implements BreedsRepository {
-  BreedsRepositoryImpl({required BreedsRemoteDataSource remoteDataSource})
-    : _remoteDataSource = remoteDataSource;
+  BreedsRepositoryImpl({
+    required BreedsRemoteDataSource remoteDataSource,
+    required BreedReferenceSource referenceSource,
+  }) : _remoteDataSource = remoteDataSource,
+       _referenceSource = referenceSource;
 
   final BreedsRemoteDataSource _remoteDataSource;
+  final BreedReferenceSource _referenceSource;
 
   @override
   Future<List<Breed>> getBreeds() async {
@@ -22,4 +27,8 @@ class BreedsRepositoryImpl implements BreedsRepository {
     final dtos = await _remoteDataSource.getBreedPhotos(breedId, limit: limit);
     return dtos.map((dto) => dto.toDomain()).toList();
   }
+
+  @override
+  Future<Map<String, BreedReference>> getBreedReferences() =>
+      _referenceSource.load();
 }

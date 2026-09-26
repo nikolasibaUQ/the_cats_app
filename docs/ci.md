@@ -47,9 +47,12 @@ The steps, in order:
 
 1. Set up Flutter and run `flutter pub get`.
 2. Regenerate localization and Riverpod/JSON code.
-3. `flutter build apk --release --dart-define-from-file=.env.example`
-   produces a release APK. `key.properties` and the upload keystore are
-   gitignored, so `app/build.gradle.kts` falls back to the automatically
+3. `flutter build apk --release` produces a release APK. The API key comes
+   from the repository secret `CAT_API_KEY` through
+   `--dart-define=CAT_API_KEY=…`; when the secret is not available (pull
+   requests from forks never receive secrets), the build falls back to the
+   public demo key in `.env.example`. `key.properties` and the upload keystore
+   are gitignored, so `app/build.gradle.kts` falls back to the automatically
    generated debug signing config on CI; no signing configuration or secrets
    are required.
 4. The `the-cats-app-release-apk` artifact contains `app-release.apk`,
@@ -57,10 +60,16 @@ The steps, in order:
 
 ## API key
 
-Builds read `--dart-define-from-file=.env.example`, which contains The Cat
-API's public demo key. The key is not a private secret (see
-[Credentials and failures](api.md#credentials-and-failures)), so the workflow
-uses no GitHub secrets.
+The repository secret `CAT_API_KEY` (GitHub repository settings → Secrets and
+variables → Actions) holds the real The Cat API key. The `android` job injects
+it into the APK with `--dart-define` and only falls back to the public demo
+key when the secret is missing, so fork pull requests still produce a working
+artifact. The `quality` job's Web build deliberately keeps the demo key: a
+Flutter Web bundle is served to any browser, and a key compiled into it is
+visible to every user, so the private key never reaches the public build (see
+[Credentials and failures](api.md#credentials-and-failures)). The secret
+protects the repository, not the installed artifact: any client binary
+necessarily carries the key it uses, on Web and on Android alike.
 
 ## Artifact retention
 

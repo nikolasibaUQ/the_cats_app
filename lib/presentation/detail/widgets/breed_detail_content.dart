@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app_locale_controller.dart';
 import '../../../domain/entities/breed.dart';
 import '../../../domain/entities/breed_photo.dart';
+import '../../../domain/entities/breed_reference.dart';
 import '../../../domain/policies/breed_gallery.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
@@ -30,6 +31,7 @@ class BreedDetailContent extends StatelessWidget {
     required this.photos,
     required this.photoRequest,
     required this.relatedBreeds,
+    required this.breedReference,
     required this.onRetryGallery,
     required this.onBreedSelected,
     required this.onShowAllBreeds,
@@ -42,6 +44,7 @@ class BreedDetailContent extends StatelessWidget {
   final List<GalleryPhoto> photos;
   final AsyncValue<List<BreedPhoto>> photoRequest;
   final List<Breed> relatedBreeds;
+  final BreedReference? breedReference;
   final VoidCallback onRetryGallery;
   final ValueChanged<Breed> onBreedSelected;
   final VoidCallback onShowAllBreeds;
@@ -61,7 +64,11 @@ class BreedDetailContent extends StatelessWidget {
             builder: (context, constraints) {
               final narrow = constraints.maxWidth < 760;
               final detailSections = <Widget>[
-                BreedInformation(breed: breed, showName: !narrow),
+                BreedInformation(
+                  breed: breed,
+                  showName: !narrow,
+                  reference: breedReference,
+                ),
                 RelatedBreedsSection(
                   breeds: relatedBreeds,
                   onBreedSelected: onBreedSelected,

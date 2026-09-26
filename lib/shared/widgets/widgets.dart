@@ -6,4 +6,5 @@ export 'app_state_message.dart';
 export 'language_menu.dart';
 export 'localized_state_illustration.dart';
 export 'overlay_circle_surface.dart';
+export 'rating_dots.dart';
 export 'section_title.dart';
