@@ -2,7 +2,7 @@ import 'dart:ui' show Locale;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/domain/entities/breed.dart';
-import 'package:the_cats_app/presentation/breed_formatting.dart';
+import 'package:the_cats_app/presentation/utils/breed_formatting.dart';
 
 void main() {
   const breed = Breed(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/breed.dart';
+import '../../../domain/entities/breed_reference.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/section_title.dart';
@@ -11,17 +12,23 @@ import '../../catalog/widgets/breed_card.dart';
 /// Horizontal suggestion row with the remaining breeds.
 ///
 /// The row shows a bounded set and reports how many breeds it leaves out, so
-/// browsing stays local while the full catalog stays one action away.
+/// browsing stays local while the full catalog stays one action away. The
+/// reference map feeds the same card used by the catalog.
 class RelatedBreedsSection extends StatefulWidget {
   const RelatedBreedsSection({
     super.key,
     required this.breeds,
+    required this.references,
     required this.onBreedSelected,
     required this.onShowAll,
   });
 
   /// Breeds to suggest, already excluding the one on screen.
   final List<Breed> breeds;
+
+  /// Traits of the bundled dataset per breed ID, the same map the catalog
+  /// cards read.
+  final Map<String, BreedReference> references;
 
   final ValueChanged<Breed> onBreedSelected;
   final VoidCallback onShowAll;
@@ -121,6 +128,7 @@ class _RelatedBreedsSectionState extends State<RelatedBreedsSection> {
                     width: responsive.size(180),
                     child: BreedCard(
                       breed: breed,
+                      intelligence: widget.references[breed.id]?.intelligence,
                       onTap: () => widget.onBreedSelected(breed),
                     ),
                   );

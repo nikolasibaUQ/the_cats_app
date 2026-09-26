@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/entities/breed.dart';
+import '../../../domain/entities/breed_reference.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/widgets.dart';
@@ -11,16 +12,22 @@ import 'breed_card.dart';
 ///
 /// Visible breeds, match count, and whether the source list had breeds all
 /// arrive resolved, so this widget only lays out the grid, the empty states,
-/// and the reveal control. Navigation is dispatched to the screen.
+/// and the reveal control. The reference map adds the traits each card can
+/// show. Navigation is dispatched to the screen.
 class BreedsResultsSliver extends StatelessWidget {
   const BreedsResultsSliver({
     super.key,
     required this.view,
+    required this.references,
     required this.onBreedSelected,
     required this.onShowMore,
   });
 
   final BreedsCatalogView view;
+
+  /// Traits of the bundled dataset per breed ID; a breed without an entry
+  /// simply renders no intelligence dots.
+  final Map<String, BreedReference> references;
   final ValueChanged<Breed> onBreedSelected;
   final VoidCallback onShowMore;
 
@@ -89,6 +96,7 @@ class BreedsResultsSliver extends StatelessWidget {
                   final breed = breeds[index];
                   return BreedCard(
                     breed: breed,
+                    intelligence: references[breed.id]?.intelligence,
                     onTap: () => onBreedSelected(breed),
                   );
                 },

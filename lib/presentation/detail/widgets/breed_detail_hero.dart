@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/policies/breed_gallery.dart';
 import '../../../shared/utils/responsive.dart';
-import '../../photo_framing.dart';
+import '../../utils/photo_framing.dart';
 import 'breed_gallery.dart';
 
 /// Photo area of the detail screen.

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:the_cats_app/presentation/photo_framing.dart';
+import 'package:the_cats_app/presentation/utils/photo_framing.dart';
 
 void main() {
   test('frames a photo with its own proportion', () {

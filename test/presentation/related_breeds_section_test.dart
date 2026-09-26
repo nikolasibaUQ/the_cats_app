@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_cats_app/domain/entities/breed.dart';
+import 'package:the_cats_app/domain/entities/breed_reference.dart';
 import 'package:the_cats_app/l10n/generated/app_localizations.dart';
 import 'package:the_cats_app/presentation/detail/widgets/related_breeds_section.dart';
 
@@ -17,6 +18,7 @@ Widget _frame() => MaterialApp(
       width: 500,
       child: RelatedBreedsSection(
         breeds: _breeds,
+        references: const <String, BreedReference>{},
         onBreedSelected: (_) {},
         onShowAll: () {},
       ),

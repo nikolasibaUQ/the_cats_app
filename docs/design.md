@@ -77,10 +77,12 @@ initial scroll without hiding matches from local search or generating another
 network request. The reveal control is a solid purple button with a downward
 arrow, so the action stands out among the white cards.
 
-Each card shows the breed name and its country of origin, as the approved
-design shows. The same card is reused for the suggestions on detail, where
-only the identifying information belongs. On pointer devices the card lifts
-with a brand-tinted shadow and purple border while hovered.
+Each card shows the breed name and, below it, the country of origin under a
+small label; when the bundled reference dataset has an entry for the breed,
+the right side of the same row shows its intelligence as five dots. The same
+card is reused for the suggestions on detail, carrying the same information.
+On pointer devices the card lifts with a brand-tinted shadow and purple border
+while hovered.
 
 The heading and search field remain fixed while the result area scrolls. This
 keeps the active query visible and avoids making the user scroll to the top to

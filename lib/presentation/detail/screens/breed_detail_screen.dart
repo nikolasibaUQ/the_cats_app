@@ -6,9 +6,10 @@ import '../../../app/app_locale_controller.dart';
 import '../../../app/app_routes.dart';
 import '../../../app/app_theme.dart';
 import '../../../domain/entities/breed.dart';
+import '../../../domain/entities/breed_reference.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/widgets.dart';
-import '../../breeds_providers.dart';
+import '../../catalog/providers/breeds_providers.dart';
 import '../providers/breed_detail_providers.dart';
 import '../widgets/widgets.dart';
 
@@ -125,11 +126,15 @@ class _BreedDetailBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final photoRequest = ref.watch(breedPhotosProvider(breed.id));
     final reference = ref.watch(breedReferenceProvider(breed.id));
+    final references =
+        ref.watch(breedReferencesProvider).value ??
+        const <String, BreedReference>{};
     return BreedDetailContent(
       breed: breed,
       photos: ref.watch(breedGalleryPhotosProvider(breed.id)),
       photoRequest: photoRequest,
       relatedBreeds: ref.watch(relatedBreedsProvider(breed.id)),
+      references: references,
       breedReference: reference,
       onRetryGallery: () {
         ref.invalidate(breedPhotosProvider(breed.id));

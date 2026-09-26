@@ -1,6 +1,6 @@
 import 'dart:ui' show Locale;
 
-import '../domain/entities/breed.dart';
+import '../../domain/entities/breed.dart';
 
 /// Weight range to show for [breed], and the measurement system it belongs to.
 ///

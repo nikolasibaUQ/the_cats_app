@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../di/breeds_dependencies.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/policies/breed_gallery.dart';
-import '../../breeds_providers.dart';
+import '../../catalog/providers/breeds_providers.dart';
 part 'breed_detail_providers.g.dart';
 
 /// Breed selected by the route ID, resolved from the cached list so a direct

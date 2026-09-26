@@ -5,12 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../../../app/app_locale_controller.dart';
 import '../../../app/app_routes.dart';
 import '../../../app/app_theme.dart';
+import '../../../domain/entities/breed_reference.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/widgets.dart';
-import '../../breeds_providers.dart';
 import '../controllers/breeds_catalog_controller.dart';
 import '../providers/breeds_catalog_view_provider.dart';
+import '../providers/breeds_providers.dart';
 import '../widgets/widgets.dart';
 
 /// Renders the catalog. Loading, retry, search input, navigation, and layout
@@ -28,6 +29,9 @@ class BreedsScreen extends ConsumerWidget {
     final selectLanguage = ref
         .read(appLocaleControllerProvider.notifier)
         .select;
+    final references =
+        ref.watch(breedReferencesProvider).value ??
+        const <String, BreedReference>{};
     final strings = AppLocalizations.of(context)!;
     final responsive = Responsive.of(context);
     return Scaffold(
@@ -95,6 +99,7 @@ class BreedsScreen extends ConsumerWidget {
                         ),
                         data: (view) => BreedsResultsSliver(
                           view: view,
+                          references: references,
                           // Pushing keeps the catalog mounted below the detail,
                           // so scroll position, search text, and controller
                           // state survive a return without any extra caching.

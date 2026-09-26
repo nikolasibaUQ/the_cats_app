@@ -9,9 +9,10 @@ import 'package:the_cats_app/domain/entities/breed_photo.dart';
 import 'package:the_cats_app/domain/entities/breed_reference.dart';
 import 'package:the_cats_app/domain/repositories/breeds_repository.dart';
 import 'package:the_cats_app/presentation/detail/widgets/breed_gallery.dart';
-import 'package:the_cats_app/presentation/photo_framing.dart';
 import 'package:the_cats_app/presentation/splash/controllers/splash_controller.dart';
+import 'package:the_cats_app/presentation/utils/photo_framing.dart';
 import 'package:the_cats_app/shared/widgets/localized_state_illustration.dart';
+import 'package:the_cats_app/shared/widgets/rating_dots.dart';
 
 class _FakeBreedsRepository implements BreedsRepository {
   int requests = 0;
@@ -511,6 +512,30 @@ void main() {
     // Both binary states stay explicit: one yes and two no.
     expect(find.text('Yes'), findsOneWidget);
     expect(find.text('No'), findsNWidgets(2));
+  });
+
+  testWidgets('catalog cards label the origin and show intelligence dots', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await pumpApp(tester, repository: _ReferenceBreedsRepository());
+    await tester.pumpAndSettle();
+
+    // Both stub breeds carry an origin, so each card states its label.
+    expect(find.text('Country of origin'), findsNWidgets(2));
+    expect(find.text('Egypt'), findsOneWidget);
+    expect(find.text('United States'), findsOneWidget);
+    // Only the Bengal has a reference entry, so only its card shows the
+    // intelligence label and its dots. The tappable card merges its children
+    // into one accessible element, so the label matches as a substring.
+    expect(find.text('Intelligence'), findsOneWidget);
+    expect(tester.widget<RatingDots>(find.byType(RatingDots)).value, 5);
+    expect(
+      find.bySemanticsLabel(RegExp('Intelligence: 5 of 5')),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+    semantics.dispose();
   });
 
   testWidgets('a related breed replaces detail without stacking navigation', (

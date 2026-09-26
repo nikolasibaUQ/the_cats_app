@@ -2,8 +2,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../domain/entities/breed.dart';
 import '../../../domain/policies/breed_search.dart';
-import '../../breeds_providers.dart';
 import '../controllers/breeds_catalog_controller.dart';
+import 'breeds_providers.dart';
 
 part 'breeds_catalog_view_provider.g.dart';
 

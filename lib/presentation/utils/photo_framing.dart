@@ -1,4 +1,4 @@
-import '../domain/policies/breed_gallery.dart';
+import '../../domain/policies/breed_gallery.dart';
 
 /// Shape of a photo area when the API does not state the photo size.
 const double defaultPhotoAspect = 4 / 3;

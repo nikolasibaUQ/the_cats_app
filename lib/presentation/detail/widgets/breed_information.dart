@@ -5,7 +5,7 @@ import '../../../domain/entities/breed_reference.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
 import '../../../shared/widgets/widgets.dart';
-import '../../breed_formatting.dart';
+import '../../utils/breed_formatting.dart';
 import 'breed_fact_card.dart';
 import 'section_panel.dart';
 

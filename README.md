@@ -32,8 +32,8 @@
   recoverable error states.
 - 🖼️ Detail route, gallery, responsive layouts, and intentional
   missing/loading-image states.
-- 🧮 Trait boards on detail: five 1–5 scales and three yes/no traits read from
-  a bundled local dataset.
+- 🧮 Trait boards on detail (five 1–5 scales and three yes/no traits) and
+  intelligence dots on catalog cards, read from a bundled local dataset.
 - 🧱 Layered structure with Riverpod, Dio, GoRouter, DTO-to-entity mapping,
   and tests across Data, Domain, and Presentation.
 

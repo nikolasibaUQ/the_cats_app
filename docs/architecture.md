@@ -12,7 +12,8 @@ lib/
   app/          shell: entry, routing, theme, locale
   domain/       entities, repository contract, domain rules
   data/         mappers, DTOs, sources, repository implementation
-  presentation/ flows (splash, catalog, detail): screens, controllers, widgets
+  presentation/ flows (splash, catalog, detail): screens, controllers, widgets,
+    plus display rules (`presentation/utils/`)
   di/           composition root
   l10n/         generated translations and ARB sources
   shared/       viewport measurements and cross-flow widgets
@@ -56,21 +57,22 @@ lib/
   di/
     breeds_dependencies.dart   # composition root for concrete dependencies
   presentation/                # one folder per flow, one subfolder per role
+    utils/                     # display rules shared by more than one flow
+      breed_formatting.dart    # display rules such as the weight system
+      photo_framing.dart       # how a photo shapes the frame it fills
     splash/                    # entry flow
       screens/splash_screen.dart         # renders the artwork and hands over
       controllers/splash_controller.dart # times the hand-over
     catalog/                   # list flow
       screens/breeds_screen.dart
       controllers/breeds_catalog_controller.dart  # search and reveal input
+      providers/breeds_providers.dart             # cached list and trait state
       providers/breeds_catalog_view_provider.dart # derived results
       widgets/                 # card, header, results sliver
     detail/                    # detail flow
       screens/breed_detail_screen.dart
       providers/breed_detail_providers.dart
       widgets/                 # hero, gallery, information, fact card, panels
-    breeds_providers.dart      # list state shared by catalog and detail
-    breed_formatting.dart      # display rules such as the weight system
-    photo_framing.dart         # how a photo shapes the frame it fills
   domain/
     entities/                  # Breed, BreedPhoto
     policies/                  # search and gallery image rules
@@ -96,11 +98,21 @@ This is a guide, not a directory checklist. Create folders only when they hold
 real responsibilities. Put a widget in `shared/` only when it is actually used
 by more than one flow.
 
+Helpers have a home per layer instead of one global folder: domain rules live
+in `domain/policies/`, raw-value interpretation in `data/mappers/`, display
+rules in `presentation/utils/`, and only layer-agnostic utilities (no domain
+or presentation imports) in `shared/utils/`. `shared/utils/` gets a
+`utils.dart` barrel only once consumers import more than one of its files.
+
 A presentation flow uses at most four role folders, and a file always lives in
 the one named after its suffix: `screens/` for `*_screen.dart`, `controllers/`
 for `*_controller.dart` notifiers, `providers/` for derived `*_provider(s).dart`
-state, and `widgets/` for reusable widgets. Files at the root of
-`presentation/` are state or rules shared by more than one flow.
+state, and `widgets/` for reusable widgets. State shared by more than one flow
+lives with the flow that owns it: the cached breed list and the reference
+traits sit in `catalog/providers/breeds_providers.dart`, and detail imports
+them the same way it imports the catalog card. Display rules shared by more
+than one flow live in `presentation/utils/`, so the root of `presentation/`
+holds only flow folders and `utils/`.
 
 ## Responsibilities
 
@@ -142,11 +154,12 @@ state, and `widgets/` for reusable widgets. Files at the root of
 - **Feature composition:** `di/breeds_dependencies.dart` is the only file that
   constructs the remote data source and injects its repository behind the
   Domain contract. Presentation does not import Data.
-- **Formatting rules:** `presentation/breed_formatting.dart` owns display
+- **Formatting rules:** `presentation/utils/breed_formatting.dart` owns display
   decisions that depend on the active language, such as reading the imperial
   range in English and the metric one elsewhere, with a fallback to whichever
-  range the API supplied. `presentation/photo_framing.dart` owns how a photo
-  shapes the frame that shows it, so the rule has one home and one test.
+  range the API supplied. `presentation/utils/photo_framing.dart` owns how a
+  photo shapes the frame that shows it, so each rule has one home and one
+  test.
 - **Routing:** `app_routes.dart` declares each path once; the router and the
   screens that navigate share those values, so a path cannot drift between
   definition and use.
@@ -199,8 +212,9 @@ decisions, not gaps:
   logic. No use case that merely forwards a repository call is added.
 - **`core/` folder:** the template groups constants, DI, errors, network, and
   utils under `core/`. This project keeps the same concerns under `app/`
-  (shell), `shared/` (cross-flow code), and `data/sources/` (Dio), so each
-  folder states its layer instead of mixing infrastructure with data access.
+  (shell), `shared/` (cross-flow code), `data/sources/` (Dio), and
+  `presentation/utils/` (display helpers), so each folder states its layer
+  instead of mixing infrastructure with data access.
 - **Immutability:** entities are plain immutable Dart classes. Freezed is not
   added for `copyWith` or equality that no flow needs.
 - **Barrels:** adopted where a folder's files are imported together
@@ -219,6 +233,6 @@ structure. Route tests create their own container and router instead of sharing
 process-wide state, and `flutter_test` runs each file in `test/` one at a time.
 
 `test/` mirrors the layers it covers (`domain/`, `data/`, `presentation/`,
-`shared/`) so the shape of the test suite stays readable next to `lib/`. A rule
-that depends only on values, such as the weight system chosen for a language,
-is tested without a widget tree.
+`shared/`, including `presentation/utils/`) so the shape of the test suite
+stays readable next to `lib/`. A rule that depends only on values, such as the
+weight system chosen for a language, is tested without a widget tree.

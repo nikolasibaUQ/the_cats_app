@@ -10,7 +10,7 @@ import '../../../domain/entities/breed_reference.dart';
 import '../../../domain/policies/breed_gallery.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/utils/responsive.dart';
-import '../../breed_formatting.dart';
+import '../../utils/breed_formatting.dart';
 import 'breed_detail_hero.dart';
 import 'breed_information.dart';
 import 'detail_navigation_bar.dart';
@@ -31,6 +31,7 @@ class BreedDetailContent extends StatelessWidget {
     required this.photos,
     required this.photoRequest,
     required this.relatedBreeds,
+    required this.references,
     required this.breedReference,
     required this.onRetryGallery,
     required this.onBreedSelected,
@@ -44,6 +45,9 @@ class BreedDetailContent extends StatelessWidget {
   final List<GalleryPhoto> photos;
   final AsyncValue<List<BreedPhoto>> photoRequest;
   final List<Breed> relatedBreeds;
+
+  /// Traits of the bundled dataset per breed ID, feeding the suggestion cards.
+  final Map<String, BreedReference> references;
   final BreedReference? breedReference;
   final VoidCallback onRetryGallery;
   final ValueChanged<Breed> onBreedSelected;
@@ -71,6 +75,7 @@ class BreedDetailContent extends StatelessWidget {
                 ),
                 RelatedBreedsSection(
                   breeds: relatedBreeds,
+                  references: references,
                   onBreedSelected: onBreedSelected,
                   onShowAll: onShowAllBreeds,
                 ),
